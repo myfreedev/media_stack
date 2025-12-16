@@ -1,0 +1,405 @@
+services:
+  # -------------------------------------------------------------------
+  # 🔑 VPN and Health Monitoring Core Services
+  # -------------------------------------------------------------------
+
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      # Main stack ports
+      - 8080:8080   # qBittorrent (main)
+      - 6881:6881   # qBittorrent
+      - 6881:6881/udp
+      - 3000:3000   # Firefox
+      - 9696:9696   # Prowlarr UI (main)
+      - 8989:8989   # Sonarr UI
+      - 7878:7878   # Radarr UI
+      - 8191:8191   # Flaresolverr
+      - 6767:6767   # Bazarr
+      - 5055:5055   # Jellyseerr
+    volumes:
+      - "${DOCKER_DATA_DIR}/gluetun:/gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - VPN_SERVICE_PROVIDER=surfshark
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${SURFSHARK_WIREGUARD_KEY} 
+      - WIREGUARD_ADDRESSES=10.14.0.2/16
+      - SERVER_COUNTRIES=Netherlands
+      - SERVER_CITIES=Amsterdam
+      - SERVER_HOSTNAMES=nl-ams.prod.surfshark.com
+      - UPDATER_PERIOD=24h
+      - FIREWALL=on
+      - FIREWALL_OUTBOUND_SUBNETS=${DOCKER_NETWORK_SUBNET:-172.20.0.0/16},${LOCAL_NETWORK_SUBNET:-192.168.50.0/24}
+      - FIREWALL_VPN_INPUT_PORTS=8080,6881
+      - DOT=on
+      - DNS_ADDRESS=1.1.1.1
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "ip addr show tun0 | grep -q 'inet ' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    labels:
+      - deunhealth.restart.on.unhealthy=true
+    networks:
+      - media_network
+
+  deunhealth:
+    image: qmcgaw/deunhealth
+    container_name: deunhealth
+    network_mode: "none"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - LOG_LEVEL=info
+      - HEALTH_SERVER_ADDRESS=127.0.0.1:9999
+      - TZ=Europe/London
+    restart: always
+    labels:
+      - deunhealth.restart.on.unhealthy=true
+
+  # -------------------------------------------------------------------
+  # 🛡️ VPN-Protected Services (network_mode: service:gluetun)
+  # -------------------------------------------------------------------
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - LOG_LEVEL=debug
+      - TZ=Europe/London
+      - PORT=5055 
+    volumes:
+      - "${DOCKER_DATA_DIR}/jellyseerr/config:/app/config"  
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:5055 || exit 1"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    labels:
+      - deunhealth.restart.on.unhealthy=true
+    
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - "${DOCKER_DATA_DIR}/prowlarr/data:/config"     
+      - "${DOCKER_DATA_DIR}/prowlarr/backup:/backup"   
+      - "${MEDIA_PATH}:/data/downloads"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9696"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    labels:
+      - deunhealth.restart.on.unhealthy=true
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - "${DOCKER_DATA_DIR}/sonarr/config:/config"     
+      - "${DOCKER_DATA_DIR}/sonarr/backup:/backup"     
+      - "${MEDIA_PATH}:/downloads"
+      - "${MEDIA_PATH}/TV Shows:/tv"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8989"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    labels:
+      - deunhealth.restart.on.unhealthy=true
+  
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - "${DOCKER_DATA_DIR}/radarr/config:/config"     
+      - "${DOCKER_DATA_DIR}/radarr/backup:/backup"     
+      - "${MEDIA_PATH}:/downloads"
+      - "${MEDIA_PATH}/Movies:/movies"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7878"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    labels:
+      - deunhealth.restart.on.unhealthy=true
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - "${DOCKER_DATA_DIR}/bazarr/config:/config"     
+      - "${MEDIA_PATH}:/downloads"
+      - "${MEDIA_PATH}/Movies:/movies"
+      - "${MEDIA_PATH}/TV Shows:/tv"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6767"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    labels:
+      - deunhealth.restart.on.unhealthy=true
+    
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Europe/London
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8191"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    labels:
+      - deunhealth.restart.on.unhealthy=true
+
+  qbittorrent:
+    container_name: qbittorrent
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    image: lscr.io/linuxserver/qbittorrent:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - UMASK=002
+      - WEBUI_PORT=8080
+    volumes:
+      - "${DOCKER_DATA_DIR}/qbittorrent/config:/config" 
+      - "${MEDIA_PATH}:/downloads"
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1024M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    labels:
+      - deunhealth.restart.on.unhealthy=true
+
+  firefox:
+    image: lscr.io/linuxserver/firefox:latest
+    container_name: firefox
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    security_opt:
+      - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - UMASK=002
+      - TITLE=FireFox
+    volumes:
+      - "${DOCKER_DATA_DIR}/firefox/config:/config"                
+      - "${MEDIA_PATH}:/config/Downloads"
+    shm_size: "1gb"
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 5120M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    labels:
+      - deunhealth.restart.on.unhealthy=true
+  
+  # -------------------------------------------------------------------
+  # 📺 Direct Host Network Services
+  # -------------------------------------------------------------------
+
+  plex:
+    container_name: plex
+    hostname: plex.local
+    image: ghcr.io/hotio/plex:latest
+    restart: unless-stopped
+    network_mode: host  # Required for Plex discovery
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - UMASK=002
+      - PLEX_CLAIM_TOKEN=${PLEX_CLAIM_TOKEN}
+      - PLEX_ADVERTISE_URL=http://${SERVER_IP}:32400/web/
+    volumes:
+      - /home/${USERNAME}/plex-data:/config
+      - /home/${USERNAME}/plex-transcode:/transcode
+      - "${MEDIA_PATH}:/data"
+
+  # -------------------------------------------------------------------
+  # 💻 Standard Network Services (connect to media_network)
+  # -------------------------------------------------------------------
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    hostname: portainer
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "${DOCKER_DATA_DIR}/portainer:/data" 
+    ports:
+      - 9000:9000
+      - 9443:9443
+    networks:
+      - media_network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - media_network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    hostname: heimdall
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - "${DOCKER_DATA_DIR}/heimdall:/config" 
+    ports:
+      - 8081:80
+    networks:
+      - media_network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+
+  filebrowser:
+    image: hurlenko/filebrowser
+    container_name: filebrowser
+    hostname: filebrowser
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - FB_BASEURL=/filebrowser
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /media:/data
+      - "${DOCKER_DATA_DIR}/filebrowser:/config"
+    ports:
+      - 8443:8080
+    networks:
+      media_network:
+        ipv4_address: "172.20.0.10"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+
+# -------------------------------------------------------------------
+# 🌐 Network Definitions
+# -------------------------------------------------------------------
+
+networks:
+  media_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${DOCKER_NETWORK_SUBNET:-172.20.0.0/16}
+          gateway: ${DOCKER_NETWORK_GATEWAY:-172.20.0.1}
