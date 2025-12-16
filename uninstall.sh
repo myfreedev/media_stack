@@ -26,9 +26,16 @@ WHITE='\033[1;37m'
 NC='\033[0m' # No Color
 BOLD='\033[1m'
 
-# Script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+# Installation directory
+INSTALL_DIR="$HOME/media-stack"
+
+# Move to installation directory if it exists
+if [ -d "$INSTALL_DIR" ]; then
+    cd "$INSTALL_DIR"
+else
+    echo -e "${YELLOW}Warning: Installation directory not found at $INSTALL_DIR${NC}"
+    echo -e "${CYAN}Using current directory instead${NC}"
+fi
 
 # ============================================================================
 # Display Functions
@@ -85,57 +92,32 @@ print_box() {
 show_warning() {
     print_banner
     
-    echo -e "${RED}${BOLD}⚠️  WARNING: This action is DESTRUCTIVE! ⚠️${NC}"
+    echo -e "${YELLOW}${BOLD}This script will remove Docker containers only${NC}"
     echo ""
-    echo -e "${YELLOW}This script will PERMANENTLY DELETE:${NC}"
+    echo -e "${YELLOW}This script will REMOVE:${NC}"
     echo ""
     echo "  ❌ All Docker containers (Plex, Sonarr, Radarr, etc.)"
-    echo "  ❌ All container configurations and databases"
-    echo "  ❌ All Docker data directory contents"
     echo "  ❌ Docker networks created by the stack"
-    echo "  ❌ .env configuration file"
     echo ""
     echo -e "${GREEN}This script will PRESERVE:${NC}"
     echo ""
     echo "  ✓ Your media files (movies, TV shows, downloads)"
+    echo "  ✓ Docker data directory (configs, databases)"
+    echo "  ✓ .env configuration file"
+    echo "  ✓ docker-compose.yml file"
     echo "  ✓ Docker and Docker Compose installation"
-    echo "  ✓ docker-compose.yml file (for reference)"
     echo ""
     
-    # Load .env to show what will be deleted
-    if [ -f ".env" ]; then
-        source .env
-        echo -e "${CYAN}${BOLD}Directories that will be deleted:${NC}"
-        echo ""
-        echo "  📁 Docker Data: ${RED}$DOCKER_DATA_DIR${NC}"
-        echo ""
-        echo -e "${CYAN}${BOLD}Directories that will be KEPT:${NC}"
-        echo ""
-        echo "  📁 Media Files: ${GREEN}$MEDIA_PATH${NC} (SAFE)"
-        echo ""
-    fi
-    
-    print_box "⚠  This action CANNOT be undone!" "$RED"
+    print_box "Containers will be removed but data is kept" "$CYAN"
 }
 
 confirm_uninstall() {
     echo ""
-    echo -e "${YELLOW}${BOLD}Are you ABSOLUTELY SURE you want to continue?${NC}"
+    echo -e "${YELLOW}${BOLD}Do you want to remove all media stack containers?${NC}"
     echo ""
-    read -p "Type 'DELETE' (in capital letters) to confirm: " confirmation
+    read -p "Type 'YES' to confirm: " confirmation
     
-    if [ "$confirmation" != "DELETE" ]; then
-        echo ""
-        print_info "Uninstallation cancelled. No changes were made."
-        echo ""
-        exit 0
-    fi
-    
-    echo ""
-    echo -e "${YELLOW}${BOLD}Last chance! Type 'YES' to proceed:${NC} "
-    read -p "" final_confirmation
-    
-    if [ "$final_confirmation" != "YES" ]; then
+    if [ "$confirmation" != "YES" ]; then
         echo ""
         print_info "Uninstallation cancelled. No changes were made."
         echo ""
@@ -201,61 +183,6 @@ remove_networks() {
     print_success "Networks removed"
 }
 
-remove_data() {
-    echo ""
-    echo -e "${BLUE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${BLUE}${BOLD}  Removing Docker Data${NC}"
-    echo -e "${BLUE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    
-    if [ -f ".env" ]; then
-        source .env
-        
-        if [ -d "$DOCKER_DATA_DIR" ]; then
-            print_step "Removing Docker data directory: $DOCKER_DATA_DIR"
-            echo ""
-            print_warning "This will delete ALL container configurations and databases!"
-            echo ""
-            read -p "Continue? (y/N): " -n 1 -r
-            echo ""
-            
-            if [[ $REPLY =~ ^[Yy]$ ]]; then
-                sudo rm -rf "$DOCKER_DATA_DIR"
-                print_success "Docker data directory removed"
-            else
-                print_info "Skipped Docker data directory removal"
-            fi
-        else
-            print_info "Docker data directory not found: $DOCKER_DATA_DIR"
-        fi
-        
-        # Verify media path is NOT deleted
-        if [ -d "$MEDIA_PATH" ]; then
-            print_success "Media files preserved at: $MEDIA_PATH"
-        fi
-    else
-        print_warning ".env file not found, skipping data directory removal"
-    fi
-}
-
-remove_config() {
-    echo ""
-    echo -e "${BLUE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${BLUE}${BOLD}  Removing Configuration${NC}"
-    echo -e "${BLUE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-    
-    if [ -f ".env" ]; then
-        print_step "Removing .env file..."
-        rm -f .env
-        print_success ".env file removed"
-    else
-        print_info ".env file not found"
-    fi
-    
-    print_info "Keeping docker-compose.yml for reference"
-}
-
 cleanup_docker() {
     echo ""
     echo -e "${BLUE}${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -273,7 +200,7 @@ show_summary() {
     echo -e "${GREEN}${BOLD}"
     echo "╔══════════════════════════════════════════════════════════╗"
     echo "║                                                          ║"
-    echo "║          ✓  UNINSTALLATION COMPLETE!  ✓                ║"
+    echo "║          ✓  CONTAINERS REMOVED!  ✓                     ║"
     echo "║                                                          ║"
     echo "╚══════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
@@ -281,16 +208,32 @@ show_summary() {
     
     echo -e "${CYAN}${BOLD}What was removed:${NC}"
     echo "  ✓ All media stack containers"
-    echo "  ✓ Docker data directory"
     echo "  ✓ Docker networks"
-    echo "  ✓ .env configuration"
     echo ""
     
     echo -e "${GREEN}${BOLD}What was preserved:${NC}"
-    echo "  ✓ Your media files (movies, TV shows, downloads)"
-    echo "  ✓ Docker and Docker Compose"
-    echo "  ✓ docker-compose.yml (for reference)"
+    echo "  ✓ Docker data directory (configs, databases)"
+    echo "  ✓ Media files (movies, TV shows, downloads)"
+    echo "  ✓ .env configuration"
+    echo "  ✓ docker-compose.yml"
     echo ""
+    
+    # Show manual cleanup commands if .env exists
+    if [ -f ".env" ]; then
+        source .env
+        
+        echo -e "${YELLOW}${BOLD}📝 Manual Cleanup Commands (if needed):${NC}"
+        echo ""
+        echo -e "${CYAN}To remove Docker data directory:${NC}"
+        echo "  ${BOLD}sudo rm -rf $DOCKER_DATA_DIR${NC}"
+        echo ""
+        echo -e "${CYAN}To remove .env file:${NC}"
+        echo "  ${BOLD}rm .env${NC}"
+        echo ""
+        echo -e "${RED}${BOLD}⚠️  WARNING: Only run these if you want to delete all data!${NC}"
+        echo -e "${CYAN}Media files at ${GREEN}$MEDIA_PATH${CYAN} are always safe.${NC}"
+        echo ""
+    fi
     
     echo -e "${CYAN}${BOLD}To reinstall:${NC}"
     echo "  Run: ${BOLD}./install.sh${NC}"
@@ -306,18 +249,16 @@ main() {
     confirm_uninstall
     
     echo ""
-    print_box "Starting uninstallation..." "$YELLOW"
+    print_box "Starting container removal..." "$YELLOW"
     
     stop_containers
     remove_containers
     remove_networks
-    remove_data
-    remove_config
     cleanup_docker
     
     show_summary
     
-    print_box "🎊 Uninstallation completed successfully!" "$GREEN"
+    print_box "🎊 Container removal completed successfully!" "$GREEN"
     echo ""
 }
 

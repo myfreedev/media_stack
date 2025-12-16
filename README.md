@@ -16,6 +16,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/myfreedev/media_stack/refs/h
 - ✅ Deploy all 16 containers
 - ✅ Display access URLs
 
+**Files are installed to:** `~/media-stack/`
+
 **No manual steps required!**
 
 ## 📦 What's Included
@@ -91,7 +93,11 @@ After deployment, access at `http://YOUR_SERVER_IP:PORT`:
 
 ## 🔄 Management
 
+All commands should be run from the installation directory:
+
 ```bash
+cd ~/media-stack
+
 # View logs
 docker compose logs -f
 
@@ -121,14 +127,22 @@ bash <(curl -fsSL https://raw.githubusercontent.com/myfreedev/media_stack/refs/h
 ```
 
 **The uninstall script will:**
-- ⚠️ Remove all Docker containers
-- ⚠️ Delete all Docker data (configs, databases)
-- ⚠️ Remove Docker networks
-- ⚠️ Delete .env file
-- ✅ **PRESERVE your media files** (movies, TV shows, downloads)
-- ✅ Keep Docker and Docker Compose installed
+- ❌ Remove all Docker containers
+- ❌ Remove Docker networks
+- ✅ **PRESERVE Docker data** (configs, databases)
+- ✅ **PRESERVE .env file**
+- ✅ **PRESERVE media files** (movies, TV shows, downloads)
 
-**Multiple confirmations required** - you'll need to type `DELETE` and `YES` to proceed.
+**To manually remove data (if needed):**
+```bash
+# Remove Docker data directory
+sudo rm -rf /path/to/docker-data
+
+# Remove .env file
+rm .env
+```
+
+**⚠️ Your media files are always safe and never deleted!**
 
 ## 🛠️ Troubleshooting
 

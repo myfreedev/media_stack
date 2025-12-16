@@ -26,9 +26,12 @@ BOLD='\033[1m'
 # GitHub repository
 GITHUB_REPO="https://raw.githubusercontent.com/myfreedev/media_stack/refs/heads/main"
 
-# Script directory
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+# Installation directory
+INSTALL_DIR="$HOME/media-stack"
+
+# Create and move to installation directory
+mkdir -p "$INSTALL_DIR"
+cd "$INSTALL_DIR"
 
 # ============================================================================
 # Display Functions
@@ -228,6 +231,9 @@ download_files() {
 
 setup_env_file() {
     print_header "⚙️  Configuration Setup"
+    
+    echo -e "${CYAN}${BOLD}Installation Directory:${NC} ${GREEN}$INSTALL_DIR${NC}"
+    echo ""
     
     if [ -f ".env" ]; then
         print_warning ".env file already exists"
@@ -463,11 +469,15 @@ show_access_info() {
     
     print_box "⚠  SECURITY: Change all default passwords!" "$RED"
     
-    echo -e "${CYAN}${BOLD}📚 Useful Commands:${NC}"
-    echo -e "  ${BOLD}View logs:${NC}      docker compose logs -f"
-    echo -e "  ${BOLD}Stop stack:${NC}     docker compose down"
-    echo -e "  ${BOLD}Restart:${NC}        docker compose restart"
-    echo -e "  ${BOLD}Update images:${NC}  docker compose pull && docker compose up -d"
+    echo -e "${CYAN}${BOLD}� Installation Directory:${NC}"
+    echo -e "  ${BOLD}$INSTALL_DIR${NC}"
+    echo ""
+    echo -e "${CYAN}${BOLD}�📚 Useful Commands:${NC}"
+    echo -e "  ${BOLD}Go to directory:${NC} cd $INSTALL_DIR"
+    echo -e "  ${BOLD}View logs:${NC}       docker compose logs -f"
+    echo -e "  ${BOLD}Stop stack:${NC}      docker compose down"
+    echo -e "  ${BOLD}Restart:${NC}         docker compose restart"
+    echo -e "  ${BOLD}Update images:${NC}   docker compose pull && docker compose up -d"
     echo ""
 }
 
