@@ -7,7 +7,7 @@
 # - Downloads files from GitHub (if needed)
 # - Installs dependencies (Docker, Docker Compose, Git)
 # - Interactive configuration
-# - Deploys the media stack
+# - Deploys the media stack!
 # ============================================================================
 
 set -e  # Exit on error
