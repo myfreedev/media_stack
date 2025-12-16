@@ -113,6 +113,24 @@ docker compose restart sonarr
 docker compose pull && docker compose up -d
 ```
 
+## 🗑️ Uninstallation
+
+To completely remove the media stack:
+
+```bash
+./uninstall.sh
+```
+
+**The uninstall script will:**
+- ⚠️ Remove all Docker containers
+- ⚠️ Delete all Docker data (configs, databases)
+- ⚠️ Remove Docker networks
+- ⚠️ Delete .env file
+- ✅ **PRESERVE your media files** (movies, TV shows, downloads)
+- ✅ Keep Docker and Docker Compose installed
+
+**Multiple confirmations required** - you'll need to type `DELETE` and `YES` to proceed.
+
 ## 🛠️ Troubleshooting
 
 ### VPN not connecting
