@@ -504,13 +504,20 @@ main() {
         print_success "Docker Compose is installed"
     fi
     
+    # Check docker group and auto-fix
     if ! groups | grep -q docker; then
         print_warning "User is not in docker group"
-        print_info "Adding user to docker group..."
+        print_step "Adding user to docker group..."
         sudo usermod -aG docker $USER
-        print_box "⚠  IMPORTANT: Run 'newgrp docker' then re-run this script" "$YELLOW"
-        exit 0
+        print_success "User added to docker group"
+        
+        print_info "Activating docker group and continuing installation..."
+        echo ""
+        
+        # Re-execute script with new group using sg
+        exec sg docker -c "$0 --continue"
     fi
+    
     print_success "User is in docker group"
     
     # Download files if needed
@@ -534,4 +541,4 @@ main() {
 }
 
 # Run main function
-main
+main "$@"
