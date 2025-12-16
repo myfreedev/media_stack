@@ -515,7 +515,7 @@ main() {
         echo ""
         
         # Re-execute this script with the docker group active
-        exec sg docker "bash $0 $@"
+        exec sg docker -c "bash '$0' $*"
     fi
     
     print_success "User is in docker group"
