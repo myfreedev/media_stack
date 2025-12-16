@@ -1,17 +1,22 @@
 # 🎬 Media Stack with VPN
 
-Automated media server stack with VPN protection. Includes Plex, Sonarr, Radarr, qBittorrent, and more.
+Automated media server stack with VPN protection. Beautiful CLI installer handles everything!
 
-## 🚀 Quick Install
+## 🚀 One-Command Installation
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/myfreedev/media_stack/refs/heads/main/install.sh | bash
 ```
 
-That's it! The script will:
-- Install Docker, Docker Compose, and dependencies
-- Ask for your configuration (VPN key, paths, etc.)
-- Deploy all services automatically
+**That's it!** The installer will:
+- ✅ Install all dependencies (Docker, Docker Compose, Git)
+- ✅ Download required files
+- ✅ Guide you through configuration with beautiful prompts
+- ✅ Create directories automatically
+- ✅ Deploy all 16 containers
+- ✅ Display access URLs
+
+**No manual steps required!**
 
 ## 📦 What's Included
 
