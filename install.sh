@@ -514,8 +514,8 @@ main() {
         print_info "Activating docker group and continuing installation..."
         echo ""
         
-        # Re-execute script with new group using sg
-        exec sg docker "$BASH_SOURCE"
+        # Re-execute this script with the docker group active
+        exec sg docker "bash $0 $@"
     fi
     
     print_success "User is in docker group"
