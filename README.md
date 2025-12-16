@@ -8,11 +8,6 @@ Automated media server stack with VPN protection. Beautiful CLI installer handle
 bash <(curl -fsSL https://raw.githubusercontent.com/myfreedev/media_stack/refs/heads/main/install.sh)
 ```
 
-> **💡 Tip:** To ensure you get the absolute latest version (bypass CDN cache), add a timestamp:
-> ```bash
-> bash <(curl -fsSL "https://raw.githubusercontent.com/myfreedev/media_stack/refs/heads/main/install.sh?$(date +%s)")
-> ```
-
 **That's it!** The installer will:
 - ✅ Install all dependencies (Docker, Docker Compose, Git)
 - ✅ Download required files
@@ -115,8 +110,12 @@ docker compose pull && docker compose up -d
 
 ## 🗑️ Uninstallation
 
-To completely remove the media stack:
+**One-liner uninstall:**
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/myfreedev/media_stack/refs/heads/main/uninstall.sh)
+```
 
+**Or run locally:**
 ```bash
 ./uninstall.sh
 ```
