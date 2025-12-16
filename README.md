@@ -5,12 +5,12 @@ Automated media server stack with VPN protection. Beautiful CLI installer handle
 ## 🚀 One-Command Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/myfreedev/media_stack/refs/heads/main/install.sh | bash
+bash <(curl -fsSL https://raw.githubusercontent.com/myfreedev/media_stack/refs/heads/main/install.sh)
 ```
 
 > **💡 Tip:** To ensure you get the absolute latest version (bypass CDN cache), add a timestamp:
 > ```bash
-> curl -fsSL "https://raw.githubusercontent.com/myfreedev/media_stack/refs/heads/main/install.sh?$(date +%s)" | bash
+> bash <(curl -fsSL "https://raw.githubusercontent.com/myfreedev/media_stack/refs/heads/main/install.sh?$(date +%s)")
 > ```
 
 **That's it!** The installer will:

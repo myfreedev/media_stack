@@ -297,8 +297,8 @@ services:
       - PLEX_CLAIM_TOKEN=${PLEX_CLAIM_TOKEN}
       - PLEX_ADVERTISE_URL=http://${SERVER_IP}:32400/web/
     volumes:
-      - /home/${USERNAME}/plex-data:/config
-      - /home/${USERNAME}/plex-transcode:/transcode
+      - "${DOCKER_DATA_DIR}/plex/config:/config"
+      - "${DOCKER_DATA_DIR}/plex/transcode:/transcode"
       - "${MEDIA_PATH}:/data"
 
   # -------------------------------------------------------------------
