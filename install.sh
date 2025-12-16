@@ -517,8 +517,16 @@ main() {
         # Get absolute path of this script
         SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
         
-        # Re-execute this script with the docker group active
-        exec sg docker -c "$SCRIPT_PATH"
+        # Create a helper script to re-execute
+        HELPER="/tmp/media-stack-helper-$$.sh"
+        cat > "$HELPER" << HELPER_EOF
+#!/bin/bash
+exec "$SCRIPT_PATH"
+HELPER_EOF
+        chmod +x "$HELPER"
+        
+        # Re-execute using the helper with sg
+        exec sg docker "$HELPER"
     fi
     
     print_success "User is in docker group"
