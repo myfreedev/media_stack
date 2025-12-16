@@ -46,6 +46,35 @@ You'll need:
 
 The script will auto-detect your server IP and prompt for storage paths.
 
+## 📁 Directory Structure
+
+After installation, your files will be organized as follows:
+
+```
+~/media-stack/              # Configuration files
+├── docker-compose.yml      # Service definitions
+├── .env                    # Your configuration
+├── install.sh              # Installer (if downloaded)
+└── uninstall.sh            # Uninstaller (if downloaded)
+
+~/docker-data/              # Container data (default)
+├── gluetun/
+├── plex/
+│   ├── config/
+│   └── transcode/
+├── sonarr/
+├── radarr/
+├── prowlarr/
+└── ... (other services)
+
+~/media/                    # Media files (default)
+├── Movies/
+├── TV Shows/
+└── downloads/
+```
+
+**Note:** You can customize `docker-data` and `media` paths during installation.
+
 ## 🔧 Manual Setup
 
 If you prefer manual installation:
