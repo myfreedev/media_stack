@@ -514,8 +514,11 @@ main() {
         print_info "Activating docker group and continuing installation..."
         echo ""
         
+        # Get absolute path of this script
+        SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
+        
         # Re-execute this script with the docker group active
-        exec sg docker -c "bash '$0' $*"
+        exec sg docker -c "$SCRIPT_PATH"
     fi
     
     print_success "User is in docker group"
