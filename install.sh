@@ -514,25 +514,20 @@ main() {
         print_info "Activating docker group and continuing installation..."
         echo ""
         
-        # Get absolute path of this script - use multiple methods for reliability
-        if [ -n "$BASH_SOURCE" ]; then
+        # Determine script path
+        if [ -f "$BASH_SOURCE" ]; then
+            # Script exists as a file
             SCRIPT_PATH="$(cd "$(dirname "$BASH_SOURCE")" && pwd)/$(basename "$BASH_SOURCE")"
-        elif [ -L "$0" ]; then
-            SCRIPT_PATH="$(readlink -f "$0")"
         else
-            SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
+            # Script is being piped (from curl), download it
+            SCRIPT_PATH="/tmp/media-stack-installer-$$.sh"
+            print_step "Downloading installer..."
+            curl -fsSL "$GITHUB_REPO/install.sh" -o "$SCRIPT_PATH"
+            chmod +x "$SCRIPT_PATH"
         fi
         
-        # Create a helper script to re-execute
-        HELPER="/tmp/media-stack-helper-$$.sh"
-        cat > "$HELPER" << HELPER_EOF
-#!/bin/bash
-exec "$SCRIPT_PATH"
-HELPER_EOF
-        chmod +x "$HELPER"
-        
-        # Re-execute using the helper with sg
-        exec sg docker "$HELPER"
+        # Re-execute with docker group active
+        exec sg docker "$SCRIPT_PATH"
     fi
     
     print_success "User is in docker group"
