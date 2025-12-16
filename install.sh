@@ -514,8 +514,14 @@ main() {
         print_info "Activating docker group and continuing installation..."
         echo ""
         
-        # Get absolute path of this script
-        SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
+        # Get absolute path of this script - use multiple methods for reliability
+        if [ -n "$BASH_SOURCE" ]; then
+            SCRIPT_PATH="$(cd "$(dirname "$BASH_SOURCE")" && pwd)/$(basename "$BASH_SOURCE")"
+        elif [ -L "$0" ]; then
+            SCRIPT_PATH="$(readlink -f "$0")"
+        else
+            SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)/$(basename "$0")"
+        fi
         
         # Create a helper script to re-execute
         HELPER="/tmp/media-stack-helper-$$.sh"
