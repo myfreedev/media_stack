@@ -436,8 +436,7 @@ services:
       - PGID=1000
       - TZ=Europe/London
       - HOMEPAGE_ALLOWED_HOSTS=*
-    group_add:
-      - "${DOCKER_GID:-0}"
+    user: "${PUID}:${DOCKER_GID}"
     networks:
       - media_network
 
