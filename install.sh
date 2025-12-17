@@ -543,6 +543,12 @@ deploy_preconfigured_templates() {
     
     print_header "📦 Deploying Preconfigured Templates"
     
+    # Safety: Stop active containers before overwriting configuration files
+    if docker compose ps | grep -q "Up"; then
+        print_step "Stopping active containers to prevent file corruption..."
+        docker compose stop >/dev/null 2>&1
+    fi
+    
     # GitHub repository details
     local GITHUB_REPO_URL="https://github.com/myfreedev/media_stack.git"
     local TEMP_DIR=$(mktemp -d)
