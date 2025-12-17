@@ -126,7 +126,8 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Management"
+      - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Media"
       - "homepage.name=Prowlarr"
       - "homepage.icon=prowlarr.png"
       - "homepage.href=http://${SERVER_IP}:9696"
@@ -289,7 +290,8 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Downloaders"
+      - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Media"
       - "homepage.name=qBittorrent"
       - "homepage.icon=qbittorrent.png"
       - "homepage.href=http://${SERVER_IP}:8080"
@@ -332,7 +334,8 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Privacy"
+      - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Media"
       - "homepage.name=Firefox"
       - "homepage.icon=firefox.png"
       - "homepage.href=http://${SERVER_IP}:3000"

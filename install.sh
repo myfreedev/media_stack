@@ -442,6 +442,38 @@ my-docker:
   socket: /var/run/docker.sock
 EOF
 
+    # Create settings.yaml (Layout & Customization)
+    # Management top, Media bottom, Custom Background
+    cat > "$DOCKER_DATA_DIR/homepage/settings.yaml" << EOF
+title: Media Stack
+headerStyle: clean
+background:
+  image: https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072
+  brightness: 50
+layout:
+  Management:
+    style: row
+    columns: 2
+  Media:
+    style: row
+    columns: 4
+EOF
+
+    # Create widgets.yaml (Time, Date, Resources)
+    cat > "$DOCKER_DATA_DIR/homepage/widgets.yaml" << EOF
+- greeting:
+    text_size: 2xl
+    text: Media Center
+- resources:
+    cpu: true
+    memory: true
+    disk: /
+- datetime:
+    format:
+      dateStyle: short
+      timeStyle: short
+EOF
+
     # Set permissions
     sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/homepage" 2>/dev/null || true
     print_success "Homepage configured for Docker discovery"
