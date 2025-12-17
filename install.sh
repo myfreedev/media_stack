@@ -573,22 +573,38 @@ show_access_info() {
     # Show credentials based on template usage
     if [ "$USE_TEMPLATES" = "true" ]; then
         echo -e "  ${BOLD}qBittorrent${NC}  → http://$SERVER_IP:8080 ${BLUE}(admin/MediaStack@S3cure)${NC}"
+        echo -e "  ${BOLD}Prowlarr${NC}     → http://$SERVER_IP:9696 ${BLUE}(No auth / admin/MediaStack@S3cure)${NC}"
+        echo -e "  ${BOLD}Sonarr${NC}       → http://$SERVER_IP:8989 ${BLUE}(No auth / admin/MediaStack@S3cure)${NC}"
+        echo -e "  ${BOLD}Radarr${NC}       → http://$SERVER_IP:7878 ${BLUE}(No auth / admin/MediaStack@S3cure)${NC}"
+        echo -e "  ${BOLD}Bazarr${NC}       → http://$SERVER_IP:6767 ${BLUE}(No auth / admin/MediaStack@S3cure)${NC}"
     else
         echo -e "  ${BOLD}qBittorrent${NC}  → http://$SERVER_IP:8080 ${BLUE}(admin/adminadmin)${NC}"
+        echo -e "  ${BOLD}Prowlarr${NC}     → http://$SERVER_IP:9696"
+        echo -e "  ${BOLD}Sonarr${NC}       → http://$SERVER_IP:8989"
+        echo -e "  ${BOLD}Radarr${NC}       → http://$SERVER_IP:7878"
+        echo -e "  ${BOLD}Bazarr${NC}       → http://$SERVER_IP:6767"
     fi
     
-    echo -e "  ${BOLD}Prowlarr${NC}     → http://$SERVER_IP:9696"
-    echo -e "  ${BOLD}Sonarr${NC}       → http://$SERVER_IP:8989"
-    echo -e "  ${BOLD}Radarr${NC}       → http://$SERVER_IP:7878"
-    echo -e "  ${BOLD}Bazarr${NC}       → http://$SERVER_IP:6767"
-    echo -e "  ${BOLD}Jellyseerr${NC}   → http://$SERVER_IP:5055"
+    echo -e "  ${BOLD}Jellyseerr${NC}   → http://$SERVER_IP:5055 ${YELLOW}-- need to configure manually${NC}"
     echo -e "  ${BOLD}Firefox${NC}      → http://$SERVER_IP:3000"
     echo ""
     echo -e "${YELLOW}Management Services:${NC}"
-    echo -e "  ${BOLD}Plex${NC}         → http://$SERVER_IP:32400/web"
-    echo -e "  ${BOLD}Portainer${NC}    → http://$SERVER_IP:9000"
-    echo -e "  ${BOLD}Heimdall${NC}     → http://$SERVER_IP:8081"
-    echo -e "  ${BOLD}Filebrowser${NC}  → http://$SERVER_IP:8443 ${BLUE}(admin/admin)${NC}"
+    echo -e "  ${BOLD}Plex${NC}         → http://$SERVER_IP:32400/web ${YELLOW}-- need to configure manually${NC}"
+    
+    if [ "$USE_TEMPLATES" = "true" ]; then
+        echo -e "  ${BOLD}Portainer${NC}    → http://$SERVER_IP:9000 ${BLUE}(admin/MediaStack@S3cure)${NC}"
+    else
+        echo -e "  ${BOLD}Portainer${NC}    → http://$SERVER_IP:9000"
+    fi
+
+    echo -e "  ${BOLD}Heimdall${NC}     → http://$SERVER_IP:8081 ${YELLOW}-- need to configure manually${NC}"
+    
+    if [ "$USE_TEMPLATES" = "true" ]; then
+        echo -e "  ${BOLD}Filebrowser${NC}  → http://$SERVER_IP:8443 ${BLUE}(admin/MediaStack@S3cure)${NC}"
+    else
+        echo -e "  ${BOLD}Filebrowser${NC}  → http://$SERVER_IP:8443 ${BLUE}(admin/admin)${NC}"
+    fi
+
     echo ""
     
     # Show template credentials summary if enabled
@@ -596,7 +612,25 @@ show_access_info() {
         echo -e "${CYAN}${BOLD}🔐 Preconfigured Template Credentials:${NC}"
         echo -e "  ${GREEN}Username:${NC} admin"
         echo -e "  ${GREEN}Password:${NC} MediaStack@S3cure"
-        echo -e "  ${YELLOW}Services:${NC} qBittorrent (more coming soon)"
+        
+        # Build list of services detected in templates
+        local detected_services=""
+        if [ -d "$INSTALL_DIR/docker-data-templates" ]; then
+            for d in "$INSTALL_DIR/docker-data-templates/"*; do
+                if [ -d "$d" ]; then
+                    detected_services="$detected_services$(basename "$d"), "
+                fi
+            done
+            # Remove trailing comma and space
+            detected_services=${detected_services%, }
+        fi
+        
+        # Fallback if no specific folders detected but templates enabled
+        if [ -z "$detected_services" ]; then
+             detected_services="qBittorrent, Prowlarr, Sonarr, Radarr, Bazarr"
+        fi
+        
+        echo -e "  ${YELLOW}Services:${NC} $detected_services"
         echo ""
     fi
     
