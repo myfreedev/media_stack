@@ -347,6 +347,15 @@ setup_env_file() {
     fi
     echo ""
     
+    
+    # Detect Docker Socket Group ID (for Homepage access)
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        DOCKER_GID=$(stat -f '%g' /var/run/docker.sock 2>/dev/null || echo "0")
+    else
+        DOCKER_GID=$(stat -c '%g' /var/run/docker.sock 2>/dev/null || echo "0")
+    fi
+    print_info "Detected Docker Socket GID: $DOCKER_GID"
+
     # Create .env file
     cat > .env << EOF
 # ============================================================================
@@ -369,6 +378,7 @@ PLEX_CLAIM_TOKEN=$PLEX_TOKEN
 # User/Group IDs
 PUID=1000
 PGID=1000
+DOCKER_GID=$DOCKER_GID
 
 # Timezone
 TZ=Europe/London
