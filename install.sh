@@ -348,12 +348,11 @@ setup_env_file() {
     echo ""
     
     
-    # Detect Docker Socket Group ID (for Homepage access)
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        DOCKER_GID=$(stat -f '%g' /var/run/docker.sock 2>/dev/null || echo "0")
-    else
-        DOCKER_GID=$(stat -c '%g' /var/run/docker.sock 2>/dev/null || echo "0")
-    fi
+    # Detect Docker Socket Group ID (Source of Truth via container)
+    # This ensures we get the internal GID (e.g., 999) even on macOS Docker Desktop
+    DOCKER_GID=$(docker run --rm -v /var/run/docker.sock:/var/run/docker.sock alpine stat -c '%g' /var/run/docker.sock 2>/dev/null || echo "0")
+    # Clean up any potential whitespace/CR
+    DOCKER_GID=$(echo "$DOCKER_GID" | tr -d '\r')
     print_info "Detected Docker Socket GID: $DOCKER_GID"
 
     # Create .env file

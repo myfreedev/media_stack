@@ -98,8 +98,9 @@ services:
       - "homepage.icon=jellyseerr.png"
       - "homepage.href=http://${SERVER_IP}:5055"
       - "homepage.description=Request Manager"
-      - "homepage.widget.type=jellyseerr"
-      - "homepage.widget.url=http://${SERVER_IP}:5055"
+      - "homepage.description=Request Manager"
+      # - "homepage.widget.type=jellyseerr"
+      # - "homepage.widget.url=http://${SERVER_IP}:5055"
       # - "homepage.widget.key={{HOMEPAGE_VAR_JELLYSEERR_API_KEY}}" # Enable after getting API key
     
   prowlarr:
@@ -130,8 +131,9 @@ services:
       - "homepage.icon=prowlarr.png"
       - "homepage.href=http://${SERVER_IP}:9696"
       - "homepage.description=Indexer Manager"
-      - "homepage.widget.type=prowlarr"
-      - "homepage.widget.url=http://${SERVER_IP}:9696"
+      - "homepage.description=Indexer Manager"
+      # - "homepage.widget.type=prowlarr"
+      # - "homepage.widget.url=http://${SERVER_IP}:9696"
       # - "homepage.widget.key={{HOMEPAGE_VAR_PROWLARR_API_KEY}}" # Enable after getting API key
 
   sonarr:
@@ -163,8 +165,9 @@ services:
       - "homepage.icon=sonarr.png"
       - "homepage.href=http://${SERVER_IP}:8989"
       - "homepage.description=TV Shows"
-      - "homepage.widget.type=sonarr"
-      - "homepage.widget.url=http://${SERVER_IP}:8989"
+      - "homepage.description=TV Shows"
+      # - "homepage.widget.type=sonarr"
+      # - "homepage.widget.url=http://${SERVER_IP}:8989"
       # - "homepage.widget.key={{HOMEPAGE_VAR_SONARR_API_KEY}}" # Enable after getting API key
   
   radarr:
@@ -196,8 +199,9 @@ services:
       - "homepage.icon=radarr.png"
       - "homepage.href=http://${SERVER_IP}:7878"
       - "homepage.description=Movies"
-      - "homepage.widget.type=radarr"
-      - "homepage.widget.url=http://${SERVER_IP}:7878"
+      - "homepage.description=Movies"
+      # - "homepage.widget.type=radarr"
+      # - "homepage.widget.url=http://${SERVER_IP}:7878"
       # - "homepage.widget.key={{HOMEPAGE_VAR_RADARR_API_KEY}}" # Enable after getting API key
 
   bazarr:
@@ -229,8 +233,9 @@ services:
       - "homepage.icon=bazarr.png"
       - "homepage.href=http://${SERVER_IP}:6767"
       - "homepage.description=Subtitles"
-      - "homepage.widget.type=bazarr"
-      - "homepage.widget.url=http://${SERVER_IP}:6767"
+      - "homepage.description=Subtitles"
+      # - "homepage.widget.type=bazarr"
+      # - "homepage.widget.url=http://${SERVER_IP}:6767"
     
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
@@ -289,10 +294,11 @@ services:
       - "homepage.icon=qbittorrent.png"
       - "homepage.href=http://${SERVER_IP}:8080"
       - "homepage.description=Torrent Client"
-      - "homepage.widget.type=qbittorrent"
-      - "homepage.widget.url=http://${SERVER_IP}:8080"
-      - "homepage.widget.username=admin"
-      - "homepage.widget.password=adminadmin" 
+      - "homepage.description=Torrent Client"
+      # - "homepage.widget.type=qbittorrent"
+      # - "homepage.widget.url=http://${SERVER_IP}:8080"
+      # - "homepage.widget.username=admin"
+      # - "homepage.widget.password=adminadmin" 
 
   firefox:
     image: lscr.io/linuxserver/firefox:latest
@@ -359,8 +365,9 @@ services:
       - "homepage.icon=plex.png"
       - "homepage.href=http://${SERVER_IP}:32400/web"
       - "homepage.description=Media Server"
-      - "homepage.widget.type=plex"
-      - "homepage.widget.url=http://${SERVER_IP}:32400"
+      - "homepage.description=Media Server"
+      # - "homepage.widget.type=plex"
+      # - "homepage.widget.url=http://${SERVER_IP}:32400"
       # - "homepage.widget.key={{HOMEPAGE_VAR_PLEX_TOKEN}}" # Enable after getting API key
 
   # -------------------------------------------------------------------
@@ -397,8 +404,9 @@ services:
       - "homepage.icon=portainer.png"
       - "homepage.href=http://${SERVER_IP}:9000"
       - "homepage.description=Docker Management"
-      - "homepage.widget.type=portainer"
-      - "homepage.widget.url=http://${SERVER_IP}:9000"
+      - "homepage.description=Docker Management"
+      # - "homepage.widget.type=portainer"
+      # - "homepage.widget.url=http://${SERVER_IP}:9000"
       # - "homepage.widget.key={{HOMEPAGE_VAR_PORTAINER_TOKEN}}" # Enable after getting API key
 
   watchtower:
