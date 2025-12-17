@@ -504,13 +504,16 @@ services:
     pid: host
     labels:
       - "homepage.group=Network"
-      - "homepage.name=Network Monitor"
+      - "homepage.name=Network Traffic"
       - "homepage.icon=glances.png"
       - "homepage.href=http://${SERVER_IP}:61208"
-      - "homepage.description=Real-time Traffic Monitor"
+      - "homepage.description=Real-time Upload/Download"
       - "homepage.widget.type=glances"
       - "homepage.widget.url=http://glances:61208"
-      - "homepage.widget.version=4"
+      - "homepage.widget.version=4"           # Fixes the 'Error' with Glances 4.x
+      - "homepage.widget.metric=network:eth0" # Maps to your specific interface
+      - "homepage.widget.chart=true"          # Enables the live sparkline graph
+      - "homepage.widget.refreshInterval=2000" # Faster updates (2 seconds)
       - "homepage.weight=10"
 
 # -------------------------------------------------------------------
