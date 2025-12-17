@@ -31,7 +31,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/myfreedev/media_stack/refs/h
 | **Radarr** | 7878 | Movie automation |
 | **Bazarr** | 6767 | Subtitle automation |
 | **Jellyseerr** | 5055 | Request management |
-| **Firefox** | 3000 | VPN browser |
+| **Brave Browser** | 3000 | Secure VPN Browser (HTTPS) |
 | **FlareSolverr** | 8191 | Cloudflare bypass |
 
 ### 🌐 Direct Access Services
@@ -79,6 +79,7 @@ Some services require personal accounts and must be configured manually.
 | Service | Username | Password |
 |---------|----------|----------|
 | **qBittorrent** | admin | `MediaStack@S3cure` (Template)<br>`adminadmin` (Default) |
+| **Brave** | admin | `MediaStack@S3cure` |
 | **Filebrowser** | admin | `admin` |
 | **Plex** | (Your Account) | - |
 | **Portainer** | (Set on login) | - |
