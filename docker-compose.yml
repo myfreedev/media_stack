@@ -361,7 +361,6 @@ services:
       - "homepage.description=Media Server"
       - "homepage.widget.type=plex"
       - "homepage.widget.url=http://${SERVER_IP}:32400"
-      - "homepage.widget.url=http://${SERVER_IP}:32400"
       # - "homepage.widget.key={{HOMEPAGE_VAR_PLEX_TOKEN}}" # Enable after getting API key
 
   # -------------------------------------------------------------------
@@ -400,7 +399,6 @@ services:
       - "homepage.description=Docker Management"
       - "homepage.widget.type=portainer"
       - "homepage.widget.url=http://${SERVER_IP}:9000"
-      - "homepage.widget.url=http://${SERVER_IP}:9000"
       # - "homepage.widget.key={{HOMEPAGE_VAR_PORTAINER_TOKEN}}" # Enable after getting API key
 
   watchtower:
@@ -429,6 +427,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/London
+      - HOMEPAGE_ALLOWED_HOSTS=*
     networks:
       - media_network
 
