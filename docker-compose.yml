@@ -312,8 +312,8 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Media"
-      - "homepage.name=qBittorrent"
+      - "homepage.group=System"
+      - "homepage.name=Downloads"
       - "homepage.icon=qbittorrent"
       - "homepage.href=http://${SERVER_IP}:8080"
       - "homepage.description=Torrent Client"
@@ -508,8 +508,8 @@ services:
     pid: host
     labels:
       - "homepage.group=Network"
-      - "homepage.name=Network Traffic"
-      - "homepage.icon=glances.png"
+      - "homepage.name=Network"
+      - "homepage.icon=glances"
       - "homepage.href=http://${SERVER_IP}:61208"
       - "homepage.description=Real-time Upload/Download"
       - "homepage.widget.type=glances"

@@ -434,17 +434,18 @@ EOF
     cat > "$DOCKER_DATA_DIR/homepage/settings.yaml" << EOF
 title: Media Stack
 headerStyle: clean
-background:
-  image: https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072
-  brightness: 50
+theme: dark
+color: slate
+cardBlur: sm
+background: https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop
 layout:
   Media:
     style: row
     columns: 4
-  Requests & Indexers:
+  Requests:
     style: row
     columns: 3
-  System & Admin:
+  System:
     style: row
     columns: 3
   Network:
@@ -483,6 +484,34 @@ EOF
     # Create empty bookmarks.yaml (Remove default bookmarks)
     cat > "$DOCKER_DATA_DIR/homepage/bookmarks.yaml" << EOF
 []
+EOF
+
+    # Create custom.css (Glassmorphism Theme)
+    cat > "$DOCKER_DATA_DIR/homepage/custom.css" << EOF
+/* Glassmorphism Effect */
+.service-card, .widget-card {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 1rem !important;
+    transition: all 0.3s ease;
+}
+
+/* Hover Animation */
+.service-card:hover {
+    transform: translateY(-5px);
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* Header Text Polish */
+h2 {
+    text-transform: uppercase;
+    letter-spacing: 0.1rem;
+    font-weight: 700;
+    color: #3b82f6; /* Beautiful Blue */
+    margin-bottom: 1rem !important;
+}
 EOF
 
     # Set permissions
