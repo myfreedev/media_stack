@@ -15,7 +15,7 @@ services:
       - 8080:8080   # qBittorrent (main)
       - 6881:6881   # qBittorrent
       - 6881:6881/udp
-      - 3000:3000   # Brave Browser (HTTP)
+      - 3000:3001   # Brave Browser (HTTPS)
       - 9696:9696   # Prowlarr UI (main)
       - 8989:8989   # Sonarr UI
       - 7878:7878   # Radarr UI
@@ -326,7 +326,7 @@ services:
       - "homepage.group=Media"
       - "homepage.name=Brave Browser"
       - "homepage.icon=brave.png"
-      - "homepage.href=http://${SERVER_IP}:3000"
+      - "homepage.href=https://${SERVER_IP}:3000"
       - "homepage.description=Secure Browser"
       - "homepage.weight=50"
   

@@ -684,7 +684,7 @@ show_access_info() {
     fi
     
     echo -e "  ${BOLD}Jellyseerr${NC}   → http://$SERVER_IP:5055 ${YELLOW}-- need to configure manually${NC}"
-    echo -e "  ${BOLD}Brave${NC}        → http://$SERVER_IP:3000"
+    echo -e "  ${BOLD}Brave${NC}        → https://$SERVER_IP:3000"
     echo ""
     echo -e "${YELLOW}Management Services:${NC}"
     echo -e "  ${BOLD}Plex${NC}         → http://$SERVER_IP:32400/web ${YELLOW}-- need to configure manually${NC}"
