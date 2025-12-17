@@ -463,32 +463,42 @@ deploy_preconfigured_templates() {
         return
     fi
     
-    # Deploy qBittorrent template from local directory
-    if [ -d "$TEMPLATE_DIR/qbittorrent" ]; then
-        print_step "Deploying qBittorrent preconfigured data..."
-        
-        # Create target directory if it doesn't exist
-        mkdir -p "$DOCKER_DATA_DIR/qbittorrent"
-        
-        # Copy template files
-        cp -r "$TEMPLATE_DIR/qbittorrent/"* "$DOCKER_DATA_DIR/qbittorrent/" 2>/dev/null || true
-        
-        # Set permissions
-        sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/qbittorrent" 2>/dev/null || true
-        
-        print_success "qBittorrent template deployed"
-        print_info "  └─ Credentials: admin / MediaStack@S3cure"
-    fi
+    # Deploy all service templates automatically
+    local deployed_count=0
+    local services_list=""
     
-    # Future templates can be added here
-    # Example:
-    # if [ -d "$TEMPLATE_DIR/radarr" ]; then
-    #     print_step "Deploying Radarr preconfigured data..."
-    #     mkdir -p "$DOCKER_DATA_DIR/radarr"
-    #     cp -r "$TEMPLATE_DIR/radarr/"* "$DOCKER_DATA_DIR/radarr/" 2>/dev/null || true
-    #     sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/radarr" 2>/dev/null || true
-    #     print_success "Radarr template deployed"
-    # fi
+    # Loop through all directories in the template folder
+    for service_dir in "$TEMPLATE_DIR"/*; do
+        if [ -d "$service_dir" ]; then
+            local service_name=$(basename "$service_dir")
+            
+            print_step "Deploying $service_name preconfigured data..."
+            
+            # Create target directory
+            mkdir -p "$DOCKER_DATA_DIR/$service_name"
+            
+            # Copy all template files for this service
+            cp -r "$service_dir/"* "$DOCKER_DATA_DIR/$service_name/" 2>/dev/null || true
+            
+            # Set permissions
+            sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/$service_name" 2>/dev/null || true
+            
+            print_success "$service_name template deployed"
+            
+            deployed_count=$((deployed_count + 1))
+            services_list="$services_list$service_name, "
+        fi
+    done
+    
+    # Show summary
+    if [ $deployed_count -gt 0 ]; then
+        services_list=${services_list%, }  # Remove trailing comma
+        echo ""
+        print_success "Deployed $deployed_count service template(s): $services_list"
+        print_info "Default credentials: admin / MediaStack@S3cure"
+    else
+        print_warning "No service templates found in $TEMPLATE_DIR"
+    fi
     
     echo ""
     print_box "⚠  SECURITY: Change default passwords after first login!" "$RED"
