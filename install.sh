@@ -453,6 +453,9 @@ layout:
   Dashboard:
     style: row
     columns: 4
+  Network:
+    style: row
+    columns: 2
 EOF
 
     # Create widgets.yaml (Time, Date, Resources)

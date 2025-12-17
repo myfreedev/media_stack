@@ -22,6 +22,7 @@ services:
       - 8191:8191   # Flaresolverr
       - 6767:6767   # Bazarr
       - 5055:5055   # Jellyseerr
+      - 8000:8000   # Gluetun Control Server
     volumes:
       - "${DOCKER_DATA_DIR}/gluetun:/gluetun"
     environment:
@@ -43,6 +44,7 @@ services:
       - FIREWALL_VPN_INPUT_PORTS=8080,6881
       - DOT=on
       - DNS_ADDRESS=1.1.1.1
+      - HTTP_CONTROL_SERVER_ADDRESS=:8000
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "ip addr show tun0 | grep -q 'inet ' || exit 1"]
@@ -51,6 +53,13 @@ services:
       retries: 5
     labels:
       - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Network"
+      - "homepage.name=Gluetun VPN"
+      - "homepage.icon=gluetun.png"
+      - "homepage.href=https://github.com/qdm12/gluetun"
+      - "homepage.widget.type=gluetun"
+      - "homepage.widget.url=http://gluetun:8000"
+      - "homepage.weight=0"
     networks:
       - media_network
 
@@ -307,7 +316,7 @@ services:
       - "homepage.href=http://${SERVER_IP}:8080"
       - "homepage.description=Torrent Client"
       - "homepage.weight=10"
-      - "homepage.description=Torrent Client"
+      - "homepage.showStats=true"
       - "homepage.widget.type=qbittorrent"
       - "homepage.widget.url=http://${SERVER_IP}:8080"
       - "homepage.widget.username=admin"
@@ -369,7 +378,7 @@ services:
       - "homepage.href=http://${SERVER_IP}:32400/web"
       - "homepage.description=Media Server"
       - "homepage.weight=30"
-      - "homepage.description=Media Server"
+      - "homepage.showStats=true"
       # - "homepage.widget.type=plex"
       # - "homepage.widget.url=http://${SERVER_IP}:32400"
       # - "homepage.widget.key={{HOMEPAGE_VAR_PLEX_TOKEN}}" # Enable after getting API key
@@ -478,6 +487,32 @@ services:
       - "homepage.icon=filebrowser.png"
       - "homepage.href=http://${SERVER_IP}:8443"
       - "homepage.description=File Manager"
+
+  speedtest:
+    image: alexjustesen/speedtest-tracker:latest
+    container_name: speedtest
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - APP_KEY=base64:$(openssl rand -base64 32)
+      - DB_CONNECTION=sqlite
+    volumes:
+      - "${DOCKER_DATA_DIR}/speedtest:/config"
+    ports:
+      - 3003:80
+    networks:
+      - media_network
+    labels:
+      - "homepage.group=Network"
+      - "homepage.name=Speedtest"
+      - "homepage.icon=speedtest-tracker.png"
+      - "homepage.href=http://${SERVER_IP}:3003"
+      - "homepage.description=Network Speed Monitor"
+      - "homepage.widget.type=speedtest"
+      - "homepage.widget.url=http://${SERVER_IP}:3003"
+      - "homepage.weight=10"
 
 # -------------------------------------------------------------------
 # 🌐 Network Definitions
