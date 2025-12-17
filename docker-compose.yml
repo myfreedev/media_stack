@@ -508,16 +508,24 @@ services:
     pid: host
     labels:
       - "homepage.group=Network"
-      - "homepage.name=Network"
+      - "homepage.name=System Monitor"
       - "homepage.icon=glances"
       - "homepage.href=http://${SERVER_IP}:61208"
-      - "homepage.description=Real-time Upload/Download"
+      - "homepage.description=Live System Stats"
       - "homepage.widget.type=glances"
       - "homepage.widget.url=http://glances:61208"
-      - "homepage.widget.version=4"           # Fixes the 'Error' with Glances 4.x
-      - "homepage.widget.metric=network:eth0" # Maps to your specific interface
-      - "homepage.widget.chart=true"          # Enables the live sparkline graph
-      - "homepage.widget.refreshInterval=2000" # Faster updates (2 seconds)
+      - "homepage.widget.version=4"
+      - "homepage.widget.metric=network:eth0"
+      - "homepage.widget.chart=true"
+      - "homepage.widget.refreshInterval=2000"
+      - "homepage.widget.cpu=true"
+      - "homepage.widget.mem=true"
+      - "homepage.widget.cputemp=true"
+      - "homepage.widget.uptime=true"
+      - "homepage.widget.disk=/"
+      - "homepage.widget.diskUnits=bytes"
+      - "homepage.widget.expanded=true"
+      - "homepage.widget.label=Media Server"
       - "homepage.weight=10"
 
 # -------------------------------------------------------------------
