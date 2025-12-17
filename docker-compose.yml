@@ -15,7 +15,7 @@ services:
       - 8080:8080   # qBittorrent (main)
       - 6881:6881   # qBittorrent
       - 6881:6881/udp
-      - 3000:6901   # Brave Browser (HTTPS)
+      - 3000:3000   # Brave Browser (HTTP)
       - 9696:9696   # Prowlarr UI (main)
       - 8989:8989   # Sonarr UI
       - 7878:7878   # Radarr UI
@@ -303,30 +303,30 @@ services:
       - "homepage.widget.password=${DEFAULT_PASSWORD}" 
 
   brave:
-    image: kasmweb/brave:1.16.0
+    image: lscr.io/linuxserver/brave:latest
     container_name: brave
     network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
     security_opt:
-      - seccomp=unconfined
+      - seccomp:unconfined #optional
     environment:
-      - VNC_PW=${DEFAULT_PASSWORD}
-      - VNC_USER=admin
-    shm_size: "512m"
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+      - TITLE=Brave
+    volumes:
+      - "${DOCKER_DATA_DIR}/brave/config:/config"                
+      - "${MEDIA_PATH}:/config/Downloads"
+    shm_size: "1gb"
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 4096M
     labels:
       - deunhealth.restart.on.unhealthy=true
       - "homepage.group=Media"
       - "homepage.name=Brave Browser"
       - "homepage.icon=brave.png"
-      - "homepage.href=https://${SERVER_IP}:3000"
+      - "homepage.href=http://${SERVER_IP}:3000"
       - "homepage.description=Secure Browser"
       - "homepage.weight=50"
   
