@@ -15,7 +15,7 @@ services:
       - 8080:8080   # qBittorrent (main)
       - 6881:6881   # qBittorrent
       - 6881:6881/udp
-      - 3000:3000   # Firefox
+      - 3000:6901   # Brave Browser (HTTPS)
       - 9696:9696   # Prowlarr UI (main)
       - 8989:8989   # Sonarr UI
       - 7878:7878   # Radarr UI
@@ -302,44 +302,33 @@ services:
       - "homepage.widget.username=admin"
       - "homepage.widget.password=MediaStack@S3cure" 
 
-  firefox:
-    image: lscr.io/linuxserver/firefox:latest
-    container_name: firefox
+  brave:
+    image: kasmweb/brave:1.16.0
+    container_name: brave
     network_mode: "service:gluetun"
     depends_on:
       gluetun:
         condition: service_healthy
     security_opt:
-      - seccomp:unconfined #optional
+      - seccomp=unconfined
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/London
-      - UMASK=002
-      - TITLE=FireFox
-    volumes:
-      - "${DOCKER_DATA_DIR}/firefox/config:/config"                
-      - "${MEDIA_PATH}:/config/Downloads"
-    shm_size: "1gb"
-    restart: always
+      - VNC_PW=MediaStack@S3cure
+      - VNC_USER=admin
+    shm_size: "512m"
+    restart: unless-stopped
     deploy:
       resources:
         limits:
           cpus: '2'
-          memory: 5120M
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 1m
-      timeout: 10s
-      retries: 3
+          memory: 4096M
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - deunhealth.restart.on.unhealthy=true
       - "homepage.group=Media"
-      - "homepage.name=Firefox"
-      - "homepage.icon=firefox.png"
-      - "homepage.href=http://${SERVER_IP}:3000"
+      - "homepage.name=Brave Browser"
+      - "homepage.icon=brave.png"
+      - "homepage.href=https://${SERVER_IP}:3000"
       - "homepage.description=Secure Browser"
+      - "homepage.weight=50"
   
   # -------------------------------------------------------------------
   # 📺 Direct Host Network Services
