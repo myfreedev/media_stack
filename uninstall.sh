@@ -157,8 +157,8 @@ remove_containers() {
     # List of container names from the stack
     containers=(
         "gluetun" "jellyseerr" "prowlarr" "sonarr" "radarr" 
-        "bazarr" "flaresolverr" "qbittorrent" "firefox" 
-        "plex" "portainer" "watchtower" "heimdall" "filebrowser" "deunhealth"
+        "bazarr" "flaresolverr" "qbittorrent" "brave" 
+        "plex" "portainer" "watchtower" "homepage" "filebrowser" "deunhealth" "speedtest"
     )
     
     for container in "${containers[@]}"; do

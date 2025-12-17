@@ -223,23 +223,6 @@ download_files() {
             print_success "Downloaded: $file"
         fi
     done
-    
-    # Download docker-data-templates directory if it doesn't exist
-    if [ ! -d "docker-data-templates" ]; then
-        print_step "Downloading preconfigured templates..."
-        
-        # Create the directory structure
-        mkdir -p docker-data-templates/qbittorrent/config/qBittorrent
-        
-        # Download qBittorrent template files
-        # Note: This is a simplified approach. For production, you might want to use git clone
-        # or download a zip archive of the templates directory
-        print_info "Template directory created at: $INSTALL_DIR/docker-data-templates"
-        print_warning "Please manually copy your docker-data-templates from your repository"
-        print_info "Or the installer will skip template deployment"
-    else
-        print_success "Template directory already exists"
-    fi
 }
 
 
