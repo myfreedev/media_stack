@@ -1,0 +1,8 @@
+{
+    "Movies": {
+        "save_path": "/downloads/Movies"
+    },
+    "TV Shows": {
+        "save_path": "/downloads/TV Shows"
+    }
+}
