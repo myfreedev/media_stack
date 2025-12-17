@@ -604,8 +604,20 @@ cleanup() {
 start_stack() {
     print_header "🚀 Deploying Media Stack"
     
-    print_step "Pulling Docker images..."
-    docker compose pull 2>&1 | grep -E "Pulling|Downloaded|Status" || true
+    # Check if images need to be pulled
+    print_step "Checking for Docker images..."
+    local missing_images=$(docker compose config --images 2>/dev/null | while read image; do
+        if ! docker image inspect "$image" >/dev/null 2>&1; then
+            echo "$image"
+        fi
+    done)
+    
+    if [ -n "$missing_images" ]; then
+        print_step "Pulling missing Docker images..."
+        docker compose pull 2>&1 | grep -E "Pulling|Downloaded|Status" || true
+    else
+        print_success "All Docker images already present, skipping pull"
+    fi
     
     print_step "Starting containers..."
     docker compose up -d
