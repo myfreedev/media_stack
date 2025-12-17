@@ -450,10 +450,7 @@ background:
   image: https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072
   brightness: 50
 layout:
-  Management:
-    style: row
-    columns: 2
-  Media:
+  Dashboard:
     style: row
     columns: 4
 EOF
