@@ -100,6 +100,7 @@ services:
       - "homepage.icon=jellyseerr.png"
       - "homepage.href=http://${SERVER_IP}:5055"
       - "homepage.description=Request Manager"
+      - "homepage.weight=0"
       - "homepage.description=Request Manager"
       # - "homepage.widget.type=jellyseerr"
       # - "homepage.widget.url=http://${SERVER_IP}:5055"
@@ -132,7 +133,8 @@ services:
       - "homepage.name=Prowlarr"
       - "homepage.icon=prowlarr.png"
       - "homepage.href=http://${SERVER_IP}:9696"
-      - "homepage.description=Indexer Manager"
+      - "homepage.description=Indexers"
+      - "homepage.weight=60"
       - "homepage.description=Indexer Manager"
       - "homepage.widget.type=prowlarr"
       - "homepage.widget.url=http://${SERVER_IP}:9696"
@@ -167,6 +169,7 @@ services:
       - "homepage.icon=sonarr.png"
       - "homepage.href=http://${SERVER_IP}:8989"
       - "homepage.description=TV Shows"
+      - "homepage.weight=40"
       - "homepage.description=TV Shows"
       - "homepage.widget.type=sonarr"
       - "homepage.widget.url=http://${SERVER_IP}:8989"
@@ -201,6 +204,7 @@ services:
       - "homepage.icon=radarr.png"
       - "homepage.href=http://${SERVER_IP}:7878"
       - "homepage.description=Movies"
+      - "homepage.weight=50"
       - "homepage.description=Movies"
       - "homepage.widget.type=radarr"
       - "homepage.widget.url=http://${SERVER_IP}:7878"
@@ -235,6 +239,7 @@ services:
       - "homepage.icon=bazarr.png"
       - "homepage.href=http://${SERVER_IP}:6767"
       - "homepage.description=Subtitles"
+      - "homepage.weight=30"
       # - "homepage.widget.type=bazarr"
       # - "homepage.widget.url=http://${SERVER_IP}:6767"
     
@@ -260,6 +265,12 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Media"
+      - "homepage.name=Flaresolverr"
+      - "homepage.icon=flaresolverr.png"
+      - "homepage.href=http://${SERVER_IP}:8191"
+      - "homepage.description=Proxy"
+      - "homepage.weight=80"
 
   qbittorrent:
     container_name: qbittorrent
@@ -295,6 +306,7 @@ services:
       - "homepage.icon=qbittorrent.png"
       - "homepage.href=http://${SERVER_IP}:8080"
       - "homepage.description=Torrent Client"
+      - "homepage.weight=70"
       - "homepage.description=Torrent Client"
       - "homepage.widget.type=qbittorrent"
       - "homepage.widget.url=http://${SERVER_IP}:8080"
@@ -327,7 +339,7 @@ services:
       - "homepage.icon=brave.png"
       - "homepage.href=https://${SERVER_IP}:3000"
       - "homepage.description=Secure Browser"
-      - "homepage.weight=50"
+      - "homepage.weight=20"
   
   # -------------------------------------------------------------------
   # 📺 Direct Host Network Services
@@ -356,6 +368,7 @@ services:
       - "homepage.icon=plex.png"
       - "homepage.href=http://${SERVER_IP}:32400/web"
       - "homepage.description=Media Server"
+      - "homepage.weight=10"
       - "homepage.description=Media Server"
       # - "homepage.widget.type=plex"
       # - "homepage.widget.url=http://${SERVER_IP}:32400"
