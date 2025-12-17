@@ -158,7 +158,7 @@ remove_containers() {
     containers=(
         "gluetun" "jellyseerr" "prowlarr" "sonarr" "radarr" 
         "bazarr" "flaresolverr" "qbittorrent" "brave" 
-        "plex" "portainer" "watchtower" "homepage" "filebrowser" "deunhealth" "speedtest"
+        "plex" "portainer" "watchtower" "homepage" "filebrowser" "deunhealth" "glances"
     )
     
     for container in "${containers[@]}"; do
