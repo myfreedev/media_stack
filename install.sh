@@ -494,6 +494,7 @@ EOF
 # ============================================================================
 
 deploy_preconfigured_templates() {
+    local CURRENT_DIR=$(pwd)
     source .env
     
     # Check if templates are enabled
@@ -538,6 +539,26 @@ deploy_preconfigured_templates() {
                     
                     print_success "$service_name template deployed"
                     print_info "  └─ Deployed to: $DOCKER_DATA_DIR/$service_name"
+                    
+                    # Extract API Key to .env (for Homepage widgets)
+                    # Convert service name to UPPERCASE for variable naming
+                    local service_upper=$(echo "$service_name" | tr '[:lower:]' '[:upper:]')
+                    if [[ "$service_upper" == "PROWLARR" || "$service_upper" == "SONARR" || "$service_upper" == "RADARR" ]]; then
+                        local config_file=$(find "$DOCKER_DATA_DIR/$service_name" -name "config.xml" | head -n 1)
+                        if [ -f "$config_file" ]; then
+                            # Extract content between <ApiKey> tags
+                            local api_key=$(sed -n 's/.*<ApiKey>\(.*\)<\/ApiKey>.*/\1/p' "$config_file" | tr -d '\r')
+                            
+                            if [ ! -z "$api_key" ]; then
+                                local env_var="${service_upper}_API_KEY"
+                                # Append to .env in the original directory
+                                if ! grep -q "^$env_var=" "$CURRENT_DIR/.env"; then
+                                    echo "$env_var=$api_key" >> "$CURRENT_DIR/.env"
+                                    print_info "  └─ Extracted API Key to .env: $env_var"
+                                fi
+                            fi
+                        fi
+                    fi
                     
                     deployed_count=$((deployed_count + 1))
                     services_list="$services_list$service_name, "
