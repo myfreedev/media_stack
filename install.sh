@@ -431,13 +431,22 @@ EOF
 
     # Create settings.yaml (Layout & Customization)
     # Management top, Media bottom, Custom Background
+    # Create settings.yaml (Layout & Customization)
+    # Management top, Media bottom, Glassmorphism theme
+    
+    # Copy local background image if it exists in templates
+    if [ -f "docker-data-templates/homepage-background.jpg" ]; then
+        cp "docker-data-templates/homepage-background.jpg" "$DOCKER_DATA_DIR/homepage/background.jpg"
+        print_success "Local background image deployed"
+    fi
+
     cat > "$DOCKER_DATA_DIR/homepage/settings.yaml" << EOF
 title: Media Stack
 headerStyle: clean
 theme: dark
 color: slate
 cardBlur: sm
-background: https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop
+background: /background.jpg
 layout:
   Media:
     style: row
