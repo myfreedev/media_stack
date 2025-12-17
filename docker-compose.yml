@@ -489,7 +489,7 @@ services:
       - "homepage.description=File Manager"
 
   speedtest:
-    image: alexjustesen/speedtest-tracker:latest
+    image: lscr.io/linuxserver/speedtest-tracker:latest
     container_name: speedtest
     restart: unless-stopped
     environment:
