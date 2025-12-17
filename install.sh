@@ -160,7 +160,11 @@ install_docker() {
     curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
     
     print_step "Running Docker installation..."
-    sudo sh /tmp/get-docker.sh > /dev/null 2>&1
+    if ! sudo sh /tmp/get-docker.sh 2>&1 | grep -v "^#" | grep -v "^$"; then
+        print_error "Docker installation failed"
+        print_info "Please check the error messages above"
+        exit 1
+    fi
     rm /tmp/get-docker.sh
     
     print_step "Starting Docker service..."
@@ -173,11 +177,12 @@ install_docker() {
     print_step "Adding user to docker group..."
     sudo usermod -aG docker $USER
     
-    print_box "⚠  IMPORTANT: Docker Group Added" "$YELLOW"
-    print_warning "You need to log out and back in for docker group changes to take effect"
-    print_info "Or run: ${BOLD}newgrp docker && $0${NC}"
+    
+    print_box "⚠  Docker Group Updated" "$YELLOW"
+    print_info "Docker group changes require re-authentication"
+    print_info "The script will now restart with proper permissions..."
     echo ""
-    read -p "Press Enter to continue after running 'newgrp docker' in a new terminal..."
+    sleep 2
 }
 
 install_docker_compose() {
