@@ -41,7 +41,7 @@ When templates are enabled:
 
 ## Template Location
 
-Templates are stored in: `/Users/stebu.johny/git/media_stack/docker-data-templates/`
+Templates are stored in: `media_stack/docker-data-templates/`
 
 To add your own templates:
 1. Create a directory: `docker-data-templates/[service-name]/`
