@@ -235,9 +235,8 @@ services:
       - "homepage.icon=bazarr.png"
       - "homepage.href=http://${SERVER_IP}:6767"
       - "homepage.description=Subtitles"
-      - "homepage.description=Subtitles"
-      - "homepage.widget.type=bazarr"
-      - "homepage.widget.url=http://${SERVER_IP}:6767"
+      # - "homepage.widget.type=bazarr"
+      # - "homepage.widget.url=http://${SERVER_IP}:6767"
     
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
