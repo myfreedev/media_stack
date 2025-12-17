@@ -429,7 +429,7 @@ services:
       - TZ=Europe/London
       - HOMEPAGE_ALLOWED_HOSTS=*
     group_add:
-      - "${DOCKER_GID}"
+      - "${DOCKER_GID:-0}"
     networks:
       - media_network
 
