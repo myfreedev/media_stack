@@ -449,7 +449,6 @@ services:
       - 3001:3000
     volumes:
       - "${DOCKER_DATA_DIR}/homepage:/app/config"
-      - "${DOCKER_DATA_DIR}/homepage/background.jpg:/app/public/background.jpg"
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - PUID=1000
