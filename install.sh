@@ -434,120 +434,63 @@ deploy_preconfigured_templates() {
     
     print_header "📦 Deploying Preconfigured Templates"
     
-    # Try to find templates in multiple locations
-    local TEMPLATE_DIR=""
-    local USE_LOCAL_TEMPLATES=false
-    
-    # First, check if we're running from the git repository (script directory)
-    local SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    if [ -d "$SCRIPT_DIR/docker-data-templates" ]; then
-        TEMPLATE_DIR="$SCRIPT_DIR/docker-data-templates"
-        USE_LOCAL_TEMPLATES=true
-        print_info "Using local templates from: $TEMPLATE_DIR"
-    # Then check the installation directory
-    elif [ -d "$INSTALL_DIR/docker-data-templates" ]; then
-        TEMPLATE_DIR="$INSTALL_DIR/docker-data-templates"
-        USE_LOCAL_TEMPLATES=true
-        print_info "Using local templates from: $TEMPLATE_DIR"
-    # Finally check current directory
-    elif [ -d "./docker-data-templates" ]; then
-        TEMPLATE_DIR="./docker-data-templates"
-        USE_LOCAL_TEMPLATES=true
-        print_info "Using local templates from: $(pwd)/docker-data-templates"
-    fi
-    
-    # If no local templates found, download from GitHub
-    if [ "$USE_LOCAL_TEMPLATES" = false ]; then
-        print_info "Local templates not found, downloading from GitHub..."
-        download_templates_from_github
-        return
-    fi
-    
-    # Deploy all service templates automatically
-    local deployed_count=0
-    local services_list=""
-    
-    # Loop through all directories in the template folder
-    for service_dir in "$TEMPLATE_DIR"/*; do
-        if [ -d "$service_dir" ]; then
-            local service_name=$(basename "$service_dir")
-            
-            print_step "Deploying $service_name preconfigured data..."
-            
-            # Create target directory
-            mkdir -p "$DOCKER_DATA_DIR/$service_name"
-            
-            # Copy all template files for this service
-            cp -r "$service_dir/"* "$DOCKER_DATA_DIR/$service_name/" 2>/dev/null || true
-            
-            # Set permissions
-            sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/$service_name" 2>/dev/null || true
-            
-            print_success "$service_name template deployed"
-            
-            deployed_count=$((deployed_count + 1))
-            services_list="$services_list$service_name, "
-        fi
-    done
-    
-    # Show summary
-    if [ $deployed_count -gt 0 ]; then
-        services_list=${services_list%, }  # Remove trailing comma
-        echo ""
-        print_success "Deployed $deployed_count service template(s): $services_list"
-        print_info "Default credentials: admin / MediaStack@S3cure"
-    else
-        print_warning "No service templates found in $TEMPLATE_DIR"
-    fi
-    
-    echo ""
-    print_box "⚠  SECURITY: Change default passwords after first login!" "$RED"
-}
-
-download_templates_from_github() {
-    print_step "Downloading templates from GitHub repository..."
-    
-    # GitHub raw content base URL for templates
-    local GITHUB_TEMPLATES="https://github.com/myfreedev/media_stack/raw/refs/heads/main/docker-data-templates"
-    
-    # Create temporary directory for download
+    # GitHub repository details
+    local GITHUB_REPO_URL="https://github.com/myfreedev/media_stack.git"
     local TEMP_DIR=$(mktemp -d)
     
-    # Download qBittorrent template structure
-    print_step "Downloading qBittorrent template..."
+    print_step "Downloading preconfigured templates from GitHub..."
     
-    # Create directory structure
-    mkdir -p "$DOCKER_DATA_DIR/qbittorrent/config/qBittorrent"
+    # Clone only the docker-data-templates directory using sparse checkout
+    cd "$TEMP_DIR"
+    git init -q
+    git remote add origin "$GITHUB_REPO_URL"
+    git config core.sparseCheckout true
+    echo "docker-data-templates/*" >> .git/info/sparse-checkout
     
-    # Download key configuration files
-    # Note: This downloads the most important config files
-    # For a complete template, consider using git clone or a zip archive
-    
-    if curl -fsSL "$GITHUB_TEMPLATES/qbittorrent/config/qBittorrent/qBittorrent.conf" \
-         -o "$DOCKER_DATA_DIR/qbittorrent/config/qBittorrent/qBittorrent.conf" 2>/dev/null; then
-        print_success "Downloaded qBittorrent configuration"
+    if git pull -q --depth=1 origin main 2>/dev/null; then
+        print_success "Templates downloaded from GitHub"
+        
+        # Copy all service folders from docker-data-templates to DOCKER_DATA_DIR
+        if [ -d "docker-data-templates" ]; then
+            local deployed_count=0
+            local services_list=""
+            
+            for service_dir in docker-data-templates/*; do
+                if [ -d "$service_dir" ]; then
+                    local service_name=$(basename "$service_dir")
+                    
+                    print_step "Deploying $service_name preconfigured data..."
+                    
+                    # Copy entire service folder to DOCKER_DATA_DIR
+                    cp -r "$service_dir" "$DOCKER_DATA_DIR/" 2>/dev/null || true
+                    
+                    # Set permissions
+                    sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/$service_name" 2>/dev/null || true
+                    
+                    print_success "$service_name template deployed"
+                    print_info "  └─ Deployed to: $DOCKER_DATA_DIR/$service_name"
+                    
+                    deployed_count=$((deployed_count + 1))
+                    services_list="$services_list$service_name, "
+                fi
+            done
+            
+            # Show summary
+            if [ $deployed_count -gt 0 ]; then
+                services_list=${services_list%, }  # Remove trailing comma
+                echo ""
+                print_success "Deployed $deployed_count service template(s): $services_list"
+                print_info "Default credentials: admin / MediaStack@S3cure"
+            fi
+        fi
     else
-        print_warning "Could not download qBittorrent template from GitHub"
-        print_info "Template deployment skipped - service will start unconfigured"
-        rm -rf "$TEMP_DIR"
-        return
+        print_warning "Could not download templates from GitHub"
+        print_info "Continuing without preconfigured templates..."
     fi
     
-    # Download additional qBittorrent files if available
-    curl -fsSL "$GITHUB_TEMPLATES/qbittorrent/config/qBittorrent/categories.json" \
-         -o "$DOCKER_DATA_DIR/qbittorrent/config/qBittorrent/categories.json" 2>/dev/null || true
-    
-    curl -fsSL "$GITHUB_TEMPLATES/qbittorrent/config/qBittorrent/qBittorrent-data.conf" \
-         -o "$DOCKER_DATA_DIR/qbittorrent/config/qBittorrent/qBittorrent-data.conf" 2>/dev/null || true
-    
-    # Set permissions
-    sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/qbittorrent" 2>/dev/null || true
-    
-    # Cleanup
+    # Cleanup temp directory
+    cd - > /dev/null
     rm -rf "$TEMP_DIR"
-    
-    print_success "qBittorrent template deployed from GitHub"
-    print_info "  └─ Credentials: admin / MediaStack@S3cure"
     
     echo ""
     print_box "⚠  SECURITY: Change default passwords after first login!" "$RED"
