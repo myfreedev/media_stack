@@ -418,6 +418,24 @@ create_directories() {
     sudo chown -R 1000:1000 "$DOCKER_DATA_DIR" 2>/dev/null || true
     sudo chown -R 1000:1000 "$MEDIA_PATH" 2>/dev/null || true
     print_success "Permissions configured"
+    
+    # Setup Homepage Config
+    setup_homepage
+}
+
+setup_homepage() {
+    print_step "Configuring Homepage dashboard..."
+    mkdir -p "$DOCKER_DATA_DIR/homepage"
+    
+    # Create docker.yaml for socket access
+    cat > "$DOCKER_DATA_DIR/homepage/docker.yaml" << EOF
+my-docker:
+  socket: /var/run/docker.sock
+EOF
+
+    # Set permissions
+    sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/homepage" 2>/dev/null || true
+    print_success "Homepage configured for Docker discovery"
 }
 
 # ============================================================================
@@ -597,7 +615,7 @@ show_access_info() {
         echo -e "  ${BOLD}Portainer${NC}    → http://$SERVER_IP:9000"
     fi
 
-    echo -e "  ${BOLD}Heimdall${NC}     → http://$SERVER_IP:8081 ${YELLOW}-- need to configure manually${NC}"
+    echo -e "  ${BOLD}Homepage${NC}     → http://$SERVER_IP:3001"
     
     if [ "$USE_TEMPLATES" = "true" ]; then
         echo -e "  ${BOLD}Filebrowser${NC}  → http://$SERVER_IP:8443 ${BLUE}(admin/MediaStack@S3cure)${NC}"

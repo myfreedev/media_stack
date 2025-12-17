@@ -39,7 +39,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/myfreedev/media_stack/refs/h
 |---------|------|-------------|
 | **Plex** | 32400 | Media server |
 | **Portainer** | 9000 | Docker management |
-| **Heimdall** | 8081 | Dashboard |
+| **Homepage** | 3001 | Modern Dashboard (Auto-discovery) |
 | **Filebrowser** | 8443 | File manager |
 
 ---

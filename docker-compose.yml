@@ -93,6 +93,14 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Media"
+      - "homepage.name=Jellyseerr"
+      - "homepage.icon=jellyseerr.png"
+      - "homepage.href=http://${SERVER_IP}:5055"
+      - "homepage.description=Request Manager"
+      - "homepage.widget.type=jellyseerr"
+      - "homepage.widget.url=http://${SERVER_IP}:5055"
+      # - "homepage.widget.key={{HOMEPAGE_VAR_JELLYSEERR_API_KEY}}" # Enable after getting API key
     
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
@@ -117,6 +125,14 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Management"
+      - "homepage.name=Prowlarr"
+      - "homepage.icon=prowlarr.png"
+      - "homepage.href=http://${SERVER_IP}:9696"
+      - "homepage.description=Indexer Manager"
+      - "homepage.widget.type=prowlarr"
+      - "homepage.widget.url=http://${SERVER_IP}:9696"
+      # - "homepage.widget.key={{HOMEPAGE_VAR_PROWLARR_API_KEY}}" # Enable after getting API key
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -142,6 +158,14 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Media"
+      - "homepage.name=Sonarr"
+      - "homepage.icon=sonarr.png"
+      - "homepage.href=http://${SERVER_IP}:8989"
+      - "homepage.description=TV Shows"
+      - "homepage.widget.type=sonarr"
+      - "homepage.widget.url=http://${SERVER_IP}:8989"
+      # - "homepage.widget.key={{HOMEPAGE_VAR_SONARR_API_KEY}}" # Enable after getting API key
   
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -167,6 +191,14 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Media"
+      - "homepage.name=Radarr"
+      - "homepage.icon=radarr.png"
+      - "homepage.href=http://${SERVER_IP}:7878"
+      - "homepage.description=Movies"
+      - "homepage.widget.type=radarr"
+      - "homepage.widget.url=http://${SERVER_IP}:7878"
+      # - "homepage.widget.key={{HOMEPAGE_VAR_RADARR_API_KEY}}" # Enable after getting API key
 
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
@@ -192,6 +224,13 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Media"
+      - "homepage.name=Bazarr"
+      - "homepage.icon=bazarr.png"
+      - "homepage.href=http://${SERVER_IP}:6767"
+      - "homepage.description=Subtitles"
+      - "homepage.widget.type=bazarr"
+      - "homepage.widget.url=http://${SERVER_IP}:6767"
     
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
@@ -245,6 +284,15 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Downloaders"
+      - "homepage.name=qBittorrent"
+      - "homepage.icon=qbittorrent.png"
+      - "homepage.href=http://${SERVER_IP}:8080"
+      - "homepage.description=Torrent Client"
+      - "homepage.widget.type=qbittorrent"
+      - "homepage.widget.url=http://${SERVER_IP}:8080"
+      - "homepage.widget.username=admin"
+      - "homepage.widget.password=adminadmin" 
 
   firefox:
     image: lscr.io/linuxserver/firefox:latest
@@ -278,6 +326,11 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
+      - "homepage.group=Privacy"
+      - "homepage.name=Firefox"
+      - "homepage.icon=firefox.png"
+      - "homepage.href=http://${SERVER_IP}:3000"
+      - "homepage.description=Secure Browser"
   
   # -------------------------------------------------------------------
   # 📺 Direct Host Network Services
@@ -300,6 +353,16 @@ services:
       - "${DOCKER_DATA_DIR}/plex/config:/config"
       - "${DOCKER_DATA_DIR}/plex/transcode:/transcode"
       - "${MEDIA_PATH}:/data"
+    labels:
+      - "homepage.group=Media"
+      - "homepage.name=Plex"
+      - "homepage.icon=plex.png"
+      - "homepage.href=http://${SERVER_IP}:32400/web"
+      - "homepage.description=Media Server"
+      - "homepage.widget.type=plex"
+      - "homepage.widget.url=http://${SERVER_IP}:32400"
+      - "homepage.widget.url=http://${SERVER_IP}:32400"
+      # - "homepage.widget.key={{HOMEPAGE_VAR_PLEX_TOKEN}}" # Enable after getting API key
 
   # -------------------------------------------------------------------
   # 💻 Standard Network Services (connect to media_network)
@@ -329,6 +392,16 @@ services:
         limits:
           cpus: '1'
           memory: 1024M
+    labels:
+      - "homepage.group=Management"
+      - "homepage.name=Portainer"
+      - "homepage.icon=portainer.png"
+      - "homepage.href=http://${SERVER_IP}:9000"
+      - "homepage.description=Docker Management"
+      - "homepage.widget.type=portainer"
+      - "homepage.widget.url=http://${SERVER_IP}:9000"
+      - "homepage.widget.url=http://${SERVER_IP}:9000"
+      # - "homepage.widget.key={{HOMEPAGE_VAR_PORTAINER_TOKEN}}" # Enable after getting API key
 
   watchtower:
     image: containrrr/watchtower
@@ -343,28 +416,21 @@ services:
           cpus: '1'
           memory: 1024M
 
-  heimdall:
-    image: lscr.io/linuxserver/heimdall:latest
-    container_name: heimdall
-    hostname: heimdall
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
     restart: unless-stopped
+    ports:
+      - 3001:3000
+    volumes:
+      - "${DOCKER_DATA_DIR}/homepage:/app/config"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/London
-    security_opt:
-      - no-new-privileges:true
-    volumes:
-      - "${DOCKER_DATA_DIR}/heimdall:/config" 
-    ports:
-      - 8081:80
     networks:
       - media_network
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1024M
 
   filebrowser:
     image: hurlenko/filebrowser
@@ -391,6 +457,12 @@ services:
         limits:
           cpus: '1'
           memory: 1024M
+    labels:
+      - "homepage.group=Management"
+      - "homepage.name=FileBrowser"
+      - "homepage.icon=filebrowser.png"
+      - "homepage.href=http://${SERVER_IP}:8443"
+      - "homepage.description=File Manager"
 
 # -------------------------------------------------------------------
 # 🌐 Network Definitions
