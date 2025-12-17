@@ -309,6 +309,26 @@ setup_env_file() {
     read -p "  Plex Claim Token (optional): " PLEX_TOKEN
     echo ""
     
+    # Preconfigured templates
+    echo -e "${CYAN}┌─────────────────────────────────────────────────────────┐${NC}"
+    echo -e "${CYAN}│${NC} ${BOLD}⚙️  Preconfigured ARR Stack Templates${NC}                 ${CYAN}│${NC}"
+    echo -e "${CYAN}└─────────────────────────────────────────────────────────┘${NC}"
+    echo "  Use preconfigured settings for ARR services?"
+    echo -e "  ${GREEN}Includes:${NC} Radarr, Sonarr, Prowlarr, Qbittorrent, Jellyseerr"
+    echo -e "  ${YELLOW}Default credentials:${NC} admin / MediaStack@S3cure"
+    echo -e "  ${BLUE}Note:${NC} You can change passwords after installation"
+    echo ""
+    read -p "  Use preconfigured templates? (Y/n): " -n 1 -r
+    echo ""
+    if [[ $REPLY =~ ^[Nn]$ ]]; then
+        USE_TEMPLATES="false"
+        print_info "Templates disabled - services will start unconfigured"
+    else
+        USE_TEMPLATES="true"
+        print_success "Templates enabled - services will use preconfigured settings"
+    fi
+    echo ""
+    
     # Create .env file
     cat > .env << EOF
 # ============================================================================
@@ -334,6 +354,9 @@ PGID=1000
 
 # Timezone
 TZ=Europe/London
+
+# Template Configuration
+USE_TEMPLATES=$USE_TEMPLATES
 
 # Network Configuration
 DOCKER_NETWORK_SUBNET=172.20.0.0/16
@@ -377,6 +400,59 @@ create_directories() {
     sudo chown -R 1000:1000 "$DOCKER_DATA_DIR" 2>/dev/null || true
     sudo chown -R 1000:1000 "$MEDIA_PATH" 2>/dev/null || true
     print_success "Permissions configured"
+}
+
+# ============================================================================
+# Template Deployment
+# ============================================================================
+
+deploy_preconfigured_templates() {
+    source .env
+    
+    # Check if templates are enabled
+    if [ "$USE_TEMPLATES" != "true" ]; then
+        return
+    fi
+    
+    print_header "📦 Deploying Preconfigured Templates"
+    
+    local TEMPLATE_DIR="$INSTALL_DIR/docker-data-templates"
+    
+    if [ ! -d "$TEMPLATE_DIR" ]; then
+        print_warning "Template directory not found: $TEMPLATE_DIR"
+        print_info "Skipping template deployment"
+        return
+    fi
+    
+    # Deploy qBittorrent template
+    if [ -d "$TEMPLATE_DIR/qbittorrent" ]; then
+        print_step "Deploying qBittorrent preconfigured data..."
+        
+        # Create target directory if it doesn't exist
+        mkdir -p "$DOCKER_DATA_DIR/qbittorrent"
+        
+        # Copy template files
+        cp -r "$TEMPLATE_DIR/qbittorrent/"* "$DOCKER_DATA_DIR/qbittorrent/" 2>/dev/null || true
+        
+        # Set permissions
+        sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/qbittorrent" 2>/dev/null || true
+        
+        print_success "qBittorrent template deployed"
+        print_info "  └─ Credentials: admin / MediaStack@S3cure"
+    fi
+    
+    # Future templates can be added here
+    # Example:
+    # if [ -d "$TEMPLATE_DIR/radarr" ]; then
+    #     print_step "Deploying Radarr preconfigured data..."
+    #     mkdir -p "$DOCKER_DATA_DIR/radarr"
+    #     cp -r "$TEMPLATE_DIR/radarr/"* "$DOCKER_DATA_DIR/radarr/" 2>/dev/null || true
+    #     sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/radarr" 2>/dev/null || true
+    #     print_success "Radarr template deployed"
+    # fi
+    
+    echo ""
+    print_box "⚠  SECURITY: Change default passwords after first login!" "$RED"
 }
 
 # ============================================================================
@@ -452,7 +528,14 @@ show_access_info() {
     echo -e "${CYAN}${BOLD}🌐 Access Your Services:${NC}"
     echo ""
     echo -e "${YELLOW}VPN-Protected Services (via Gluetun):${NC}"
-    echo -e "  ${BOLD}qBittorrent${NC}  → http://$SERVER_IP:8080 ${BLUE}(admin/adminadmin)${NC}"
+    
+    # Show credentials based on template usage
+    if [ "$USE_TEMPLATES" = "true" ]; then
+        echo -e "  ${BOLD}qBittorrent${NC}  → http://$SERVER_IP:8080 ${BLUE}(admin/MediaStack@S3cure)${NC}"
+    else
+        echo -e "  ${BOLD}qBittorrent${NC}  → http://$SERVER_IP:8080 ${BLUE}(admin/adminadmin)${NC}"
+    fi
+    
     echo -e "  ${BOLD}Prowlarr${NC}     → http://$SERVER_IP:9696"
     echo -e "  ${BOLD}Sonarr${NC}       → http://$SERVER_IP:8989"
     echo -e "  ${BOLD}Radarr${NC}       → http://$SERVER_IP:7878"
@@ -466,6 +549,15 @@ show_access_info() {
     echo -e "  ${BOLD}Heimdall${NC}     → http://$SERVER_IP:8081"
     echo -e "  ${BOLD}Filebrowser${NC}  → http://$SERVER_IP:8443 ${BLUE}(admin/admin)${NC}"
     echo ""
+    
+    # Show template credentials summary if enabled
+    if [ "$USE_TEMPLATES" = "true" ]; then
+        echo -e "${CYAN}${BOLD}🔐 Preconfigured Template Credentials:${NC}"
+        echo -e "  ${GREEN}Username:${NC} admin"
+        echo -e "  ${GREEN}Password:${NC} MediaStack@S3cure"
+        echo -e "  ${YELLOW}Services:${NC} qBittorrent (more coming soon)"
+        echo ""
+    fi
     
     print_box "⚠  SECURITY: Change all default passwords!" "$RED"
     
@@ -552,6 +644,7 @@ main() {
     # Setup
     setup_env_file
     create_directories
+    deploy_preconfigured_templates
     cleanup
     start_stack
     check_status

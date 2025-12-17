@@ -224,19 +224,19 @@ show_summary() {
         
         echo -e "${YELLOW}${BOLD}📝 Manual Cleanup Commands (if needed):${NC}"
         echo ""
-        echo -e "${CYAN}To remove Docker data directory:${NC}"
-        echo "  ${BOLD}sudo rm -rf $DOCKER_DATA_DIR${NC}"
+        echo -e "To remove Docker data directory:"
+        echo -e "  ${BOLD}sudo rm -rf $DOCKER_DATA_DIR${NC}"
         echo ""
-        echo -e "${CYAN}To remove .env file:${NC}"
-        echo "  ${BOLD}rm .env${NC}"
+        echo -e "To remove .env file:"
+        echo -e "  ${BOLD}rm .env${NC}"
         echo ""
         echo -e "${RED}${BOLD}⚠️  WARNING: Only run these if you want to delete all data!${NC}"
-        echo -e "${CYAN}Media files at ${GREEN}$MEDIA_PATH${CYAN} are always safe.${NC}"
+        echo -e "Media files at ${GREEN}$MEDIA_PATH${NC} are always safe."
         echo ""
     fi
     
     echo -e "${CYAN}${BOLD}To reinstall:${NC}"
-    echo "  Run: ${BOLD}./install.sh${NC}"
+    echo -e "  Run: ${BOLD}./install.sh${NC}"
     echo ""
 }
 
