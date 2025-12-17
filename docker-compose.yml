@@ -509,7 +509,8 @@ services:
       - "homepage.href=http://${SERVER_IP}:61208"
       - "homepage.description=Real-time Traffic Monitor"
       - "homepage.widget.type=glances"
-      - "homepage.widget.url=http://${SERVER_IP}:61208"
+      - "homepage.widget.url=http://glances:61208"
+      - "homepage.widget.version=4"
       - "homepage.weight=10"
 
 # -------------------------------------------------------------------
