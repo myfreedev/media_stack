@@ -410,6 +410,7 @@ services:
       - "homepage.description=Docker Management"
       - "homepage.description=Docker Management"
       - "homepage.widget.type=portainer"
+      - "homepage.widget.env=3" ##dashboard ID
       - "homepage.widget.url=http://${SERVER_IP}:9000"
       - "homepage.widget.key=${PORTAINER_TOKEN}"
 
