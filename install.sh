@@ -560,6 +560,15 @@ deploy_preconfigured_templates() {
                         fi
                     fi
                     
+                    # Inject Preconfigured Portainer Token
+                    if [[ "$service_upper" == "PORTAINER" ]]; then
+                         local portainer_token="ptr_3w05LC6Ky4yv0t5JcPBPHXNhW2Jop/Qah/YsvEGMYk8="
+                         if ! grep -q "^PORTAINER_TOKEN=" "$CURRENT_DIR/.env"; then
+                             echo "PORTAINER_TOKEN=$portainer_token" >> "$CURRENT_DIR/.env"
+                             print_info "  └─ Injected Portainer Token to .env"
+                         fi
+                    fi
+                    
                     deployed_count=$((deployed_count + 1))
                     services_list="$services_list$service_name, "
                 fi

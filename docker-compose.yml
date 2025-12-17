@@ -403,14 +403,15 @@ services:
           memory: 1024M
     labels:
       - "homepage.group=Management"
+      - "homepage.weight=0"
       - "homepage.name=Portainer"
       - "homepage.icon=portainer.png"
       - "homepage.href=http://${SERVER_IP}:9000"
       - "homepage.description=Docker Management"
       - "homepage.description=Docker Management"
-      # - "homepage.widget.type=portainer"
-      # - "homepage.widget.url=http://${SERVER_IP}:9000"
-      # - "homepage.widget.key={{HOMEPAGE_VAR_PORTAINER_TOKEN}}" # Enable after getting API key
+      - "homepage.widget.type=portainer"
+      - "homepage.widget.url=http://${SERVER_IP}:9000"
+      - "homepage.widget.key=${PORTAINER_TOKEN}"
 
   watchtower:
     image: containrrr/watchtower
@@ -470,6 +471,7 @@ services:
           memory: 1024M
     labels:
       - "homepage.group=Management"
+      - "homepage.weight=10"
       - "homepage.name=FileBrowser"
       - "homepage.icon=filebrowser.png"
       - "homepage.href=http://${SERVER_IP}:8443"
