@@ -262,6 +262,8 @@ setup_env_file() {
     echo ""
     read -p "  Path [/home/$USER/docker-data]: " DOCKER_DATA_DIR
     DOCKER_DATA_DIR=${DOCKER_DATA_DIR:-/home/$USER/docker-data}
+    # Expand tilde if present
+    DOCKER_DATA_DIR="${DOCKER_DATA_DIR/#\~/$HOME}"
     echo ""
     
     # Media path
@@ -274,6 +276,8 @@ setup_env_file() {
     echo ""
     read -p "  Path [/home/$USER/media]: " MEDIA_PATH
     MEDIA_PATH=${MEDIA_PATH:-/home/$USER/media}
+    # Expand tilde if present
+    MEDIA_PATH="${MEDIA_PATH/#\~/$HOME}"
     echo ""
     
     # Surfshark WireGuard key
@@ -446,7 +450,9 @@ headerStyle: clean
 theme: dark
 color: slate
 cardBlur: sm
-background: /background.jpg
+background:
+  image: /background.jpg
+  brightness: 50
 layout:
   Media:
     style: row
