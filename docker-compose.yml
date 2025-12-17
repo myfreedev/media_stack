@@ -104,12 +104,12 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Dashboard"
+      - "homepage.group=Requests & Indexers"
       - "homepage.name=Jellyseerr"
-      - "homepage.icon=jellyseerr.png"
+      - "homepage.icon=jellyseerr"
       - "homepage.href=http://${SERVER_IP}:5055"
       - "homepage.description=Request Manager"
-      - "homepage.weight=20"
+      - "homepage.weight=0"
       - "homepage.description=Request Manager"
       # - "homepage.widget.type=jellyseerr"
       # - "homepage.widget.url=http://${SERVER_IP}:5055"
@@ -138,12 +138,12 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Dashboard"
+      - "homepage.group=Requests & Indexers"
       - "homepage.name=Prowlarr"
-      - "homepage.icon=prowlarr.png"
+      - "homepage.icon=prowlarr"
       - "homepage.href=http://${SERVER_IP}:9696"
       - "homepage.description=Indexers"
-      - "homepage.weight=0"
+      - "homepage.weight=10"
       - "homepage.description=Indexer Manager"
       - "homepage.widget.type=prowlarr"
       - "homepage.widget.url=http://${SERVER_IP}:9696"
@@ -173,12 +173,13 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Dashboard"
+      - "homepage.group=Media"
       - "homepage.name=Sonarr"
-      - "homepage.icon=sonarr.png"
+      - "homepage.icon=sonarr"
       - "homepage.href=http://${SERVER_IP}:8989"
       - "homepage.description=TV Shows"
-      - "homepage.weight=50"
+      - "homepage.weight=10"
+      - "homepage.showStats=true"
       - "homepage.description=TV Shows"
       - "homepage.widget.type=sonarr"
       - "homepage.widget.url=http://${SERVER_IP}:8989"
@@ -208,12 +209,13 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Dashboard"
+      - "homepage.group=Media"
       - "homepage.name=Radarr"
-      - "homepage.icon=radarr.png"
+      - "homepage.icon=radarr"
       - "homepage.href=http://${SERVER_IP}:7878"
       - "homepage.description=Movies"
-      - "homepage.weight=40"
+      - "homepage.weight=20"
+      - "homepage.showStats=true"
       - "homepage.description=Movies"
       - "homepage.widget.type=radarr"
       - "homepage.widget.url=http://${SERVER_IP}:7878"
@@ -243,12 +245,12 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Dashboard"
+      - "homepage.group=Requests & Indexers"
       - "homepage.name=Bazarr"
-      - "homepage.icon=bazarr.png"
+      - "homepage.icon=bazarr"
       - "homepage.href=http://${SERVER_IP}:6767"
       - "homepage.description=Subtitles"
-      - "homepage.weight=70"
+      - "homepage.weight=20"
       # - "homepage.widget.type=bazarr"
       # - "homepage.widget.url=http://${SERVER_IP}:6767"
     
@@ -310,12 +312,13 @@ services:
       retries: 3
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Dashboard"
+      - "homepage.group=Media"
       - "homepage.name=qBittorrent"
-      - "homepage.icon=qbittorrent.png"
+      - "homepage.icon=qbittorrent"
       - "homepage.href=http://${SERVER_IP}:8080"
       - "homepage.description=Torrent Client"
-      - "homepage.weight=10"
+      - "homepage.weight=30"
+      - "homepage.showStats=true"
       - "homepage.showStats=true"
       - "homepage.widget.type=qbittorrent"
       - "homepage.widget.url=http://${SERVER_IP}:8080"
@@ -343,12 +346,12 @@ services:
     restart: unless-stopped
     labels:
       - deunhealth.restart.on.unhealthy=true
-      - "homepage.group=Dashboard"
+      - "homepage.group=Media"
       - "homepage.name=Brave Browser"
-      - "homepage.icon=brave.png"
+      - "homepage.icon=brave"
       - "homepage.href=https://${SERVER_IP}:3000"
       - "homepage.description=Secure Browser"
-      - "homepage.weight=60"
+      - "homepage.weight=40"
   
   # -------------------------------------------------------------------
   # 📺 Direct Host Network Services
@@ -372,12 +375,13 @@ services:
       - "${DOCKER_DATA_DIR}/plex/transcode:/transcode"
       - "${MEDIA_PATH}:/data"
     labels:
-      - "homepage.group=Dashboard"
+      - "homepage.group=Media"
       - "homepage.name=Plex"
-      - "homepage.icon=plex.png"
+      - "homepage.icon=plex"
       - "homepage.href=http://${SERVER_IP}:32400/web"
       - "homepage.description=Media Server"
-      - "homepage.weight=30"
+      - "homepage.weight=0"
+      - "homepage.showStats=true"
       - "homepage.showStats=true"
       # - "homepage.widget.type=plex"
       # - "homepage.widget.url=http://${SERVER_IP}:32400"
@@ -412,12 +416,12 @@ services:
           cpus: '1'
           memory: 1024M
     labels:
-      - "homepage.group=Dashboard"
-      - "homepage.weight=80"
+      - "homepage.group=System & Admin"
       - "homepage.name=Portainer"
-      - "homepage.icon=portainer.png"
+      - "homepage.icon=portainer"
       - "homepage.href=http://${SERVER_IP}:9000"
       - "homepage.description=Docker Management"
+      - "homepage.weight=0"
       - "homepage.description=Docker Management"
       - "homepage.widget.type=portainer"
       - "homepage.widget.env=3" ##dashboard ID
@@ -481,12 +485,12 @@ services:
           cpus: '1'
           memory: 1024M
     labels:
-      - "homepage.group=Dashboard"
-      - "homepage.weight=90"
+      - "homepage.group=System & Admin"
       - "homepage.name=FileBrowser"
-      - "homepage.icon=filebrowser.png"
+      - "homepage.icon=filebrowser"
       - "homepage.href=http://${SERVER_IP}:8443"
       - "homepage.description=File Manager"
+      - "homepage.weight=10"
 
   glances:
     image: nicolargo/glances:latest

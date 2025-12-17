@@ -438,27 +438,41 @@ background:
   image: https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072
   brightness: 50
 layout:
-  Dashboard:
+  Media:
     style: row
     columns: 4
+  Requests & Indexers:
+    style: row
+    columns: 3
+  System & Admin:
+    style: row
+    columns: 3
   Network:
     style: row
     columns: 2
 EOF
 
-    # Create widgets.yaml (Time, Date, Resources)
+    # Create widgets.yaml (Enhanced Header)
     cat > "$DOCKER_DATA_DIR/homepage/widgets.yaml" << EOF
-- greeting:
-    text_size: 2xl
-    text: Media Center
+- logo:
+    icon: https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/homarr.png
 - resources:
     cpu: true
     memory: true
     disk: /
+- search:
+    provider: google
+    target: _blank
 - datetime:
+    text_size: xl
     format:
-      dateStyle: short
-      timeStyle: short
+      date: long
+      time: short
+- openmeteo:
+    label: London
+    latitude: 51.5074
+    longitude: 0.1278
+    units: metric
 EOF
 
     # Create empty services.yaml (Remove default groups)
