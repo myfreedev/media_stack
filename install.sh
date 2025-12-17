@@ -474,6 +474,16 @@ EOF
       timeStyle: short
 EOF
 
+    # Create empty services.yaml (Remove default groups)
+    cat > "$DOCKER_DATA_DIR/homepage/services.yaml" << EOF
+[]
+EOF
+
+    # Create empty bookmarks.yaml (Remove default bookmarks)
+    cat > "$DOCKER_DATA_DIR/homepage/bookmarks.yaml" << EOF
+[]
+EOF
+
     # Set permissions
     sudo chown -R 1000:1000 "$DOCKER_DATA_DIR/homepage" 2>/dev/null || true
     print_success "Homepage configured for Docker discovery"
